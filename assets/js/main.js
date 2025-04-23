@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = true;
             
             // Submit the form to process-email.php
-            this.action = '/api/process-email.php';
+            this.action = 'api/process-email.php';
             this.method = 'post';
             this.submit();
         });

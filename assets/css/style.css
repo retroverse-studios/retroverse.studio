@@ -92,7 +92,7 @@ nav {
     height: 100vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/assets/images/hero-bg.jpg') center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/hero-bg.jpg') center/cover;
     position: relative;
     overflow: hidden;
 }
@@ -518,7 +518,7 @@ footer {
     right: 20px;
     width: 100px;
     height: 100px;
-    background: url('/assets/images/pixel-animation.jpg') center/cover;
+    background: url('../images/pixel-animation.jpg') center/cover;
     animation: float 3s ease-in-out infinite;
 }
 
