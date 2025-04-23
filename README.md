@@ -12,12 +12,14 @@ A responsive website for RetroVerse Studios, a fictional indie game studio that 
 
 ## Structure
 
-- `/img/` - Contains all website images
-- `/scripts/` - JavaScript and PHP scripts
-  - `main.js` - Main JavaScript for the site
+- `/assets/` - Static assets
+  - `/assets/images/` - Contains all website images
+  - `/assets/js/` - JavaScript files
+    - `main.js` - Main JavaScript for the site
+  - `/assets/css/` - CSS stylesheets
+    - `style.css` - Main stylesheet
+- `/api/` - Server-side scripts
   - `process-email.php` - Handles newsletter subscriptions
-- `/styles/` - CSS stylesheets
-  - `style.css` - Main stylesheet
 
 ## Setup
 
