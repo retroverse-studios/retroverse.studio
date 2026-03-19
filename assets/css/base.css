@@ -1,0 +1,287 @@
+/* ═══════════════════════════════════════
+   BASE — Shared across all modes
+   Variables, resets, scanlines, boot, mode switcher
+   ═══════════════════════════════════════ */
+
+:root {
+    --bg: #0c0c14;
+    --surface: #12121e;
+    --elevated: #1a1a2e;
+    --border: #2a2a44;
+    --text: #e0e0e8;
+    --muted: #7a7a9a;
+    --accent: #00ff99;
+    --primary: #8a2be2;
+    --secondary: #3498db;
+    --danger: #ff3333;
+    --warn: #ffc107;
+    --font: 'Press Start 2P', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font);
+    font-size: 12px;
+    line-height: 1.8;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: #33ffbb; }
+
+h1, h2, h3, h4 {
+    font-family: var(--font);
+    text-transform: uppercase;
+    line-height: 1.5;
+}
+
+ul { list-style: none; }
+img { max-width: 100%; height: auto; }
+
+.wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ═══════════════════════════════════════
+   SCANLINES (always on)
+   ═══════════════════════════════════════ */
+
+.scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.06) 0px,
+        rgba(0,0,0,0.06) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    z-index: 10000;
+}
+
+/* ═══════════════════════════════════════
+   BOOT SCREEN
+   ═══════════════════════════════════════ */
+
+#boot-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px;
+    transition: opacity 0.5s;
+}
+
+#boot-screen.done {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#boot-text {
+    font-family: var(--font);
+    font-size: 0.7rem;
+    color: var(--accent);
+    line-height: 2.2;
+    white-space: pre-wrap;
+    max-width: 700px;
+}
+
+#boot-progress {
+    margin-top: 24px;
+    width: 300px;
+    height: 16px;
+    border: 2px solid var(--accent);
+    background: transparent;
+}
+
+#boot-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.15s;
+}
+
+/* ═══════════════════════════════════════
+   MODE SWITCHER (floating pill)
+   ═══════════════════════════════════════ */
+
+#mode-switcher {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 9998;
+    display: flex;
+    gap: 4px;
+    background: rgba(12,12,20,0.9);
+    border: 2px solid var(--border);
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+#mode-switcher.visible {
+    opacity: 1;
+}
+
+.mode-btn {
+    font-family: var(--font);
+    font-size: 0.5rem;
+    padding: 6px 10px;
+    background: transparent;
+    color: var(--muted);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.mode-btn.active {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.mode-btn--reboot {
+    color: var(--danger) !important;
+    border-left: 2px solid var(--border);
+    margin-left: 2px;
+    padding-left: 12px !important;
+}
+
+.mode-btn--reboot:hover {
+    color: #fff !important;
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+/* ═══════════════════════════════════════
+   GLITCH EFFECT (shared)
+   ═══════════════════════════════════════ */
+
+.glitch { position: relative; }
+
+.glitch:hover::before,
+.glitch:hover::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    overflow: hidden;
+}
+
+.glitch:hover::before {
+    color: var(--primary);
+    animation: g1 0.3s linear infinite;
+    clip-path: inset(0 0 65% 0);
+}
+
+.glitch:hover::after {
+    color: var(--secondary);
+    animation: g2 0.3s linear infinite;
+    clip-path: inset(65% 0 0 0);
+}
+
+@keyframes g1 {
+    0%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}
+    60%{transform:translateX(-1px)}80%{transform:translateX(2px)}100%{transform:translateX(0)}
+}
+@keyframes g2 {
+    0%{transform:translateX(0)}20%{transform:translateX(3px)}40%{transform:translateX(-2px)}
+    60%{transform:translateX(1px)}80%{transform:translateX(-3px)}100%{transform:translateX(0)}
+}
+
+/* ═══════════════════════════════════════
+   PLACEHOLDER ANIMATIONS (shared)
+   ═══════════════════════════════════════ */
+
+.card-img--glomph {
+    background: var(--bg) !important;
+    position: relative;
+}
+
+.card-img--glomph::after {
+    content: 'O . . . · · · <';
+    font-family: var(--font);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,255,153,0.4);
+    animation: pulse 3s linear infinite;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img--incident {
+    background: var(--bg) !important;
+    position: relative;
+}
+
+.card-img--incident::after {
+    content: '> BREACH DETECTED_';
+    font-family: var(--font);
+    font-size: 0.7rem;
+    color: var(--danger);
+    text-shadow: 0 0 20px rgba(255,51,51,0.6);
+    animation: blink 1.2s step-end infinite;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ═══════════════════════════════════════
+   HIDDEN BY DEFAULT
+   Terminal/BBS chrome hidden until mode activates
+   ═══════════════════════════════════════ */
+
+#matrix-canvas,
+#hacker-feed,
+#stats-panel,
+#doom-hud,
+#term-input-bar,
+#bbs-input-bar,
+#term-output,
+#bbs-output,
+#scroll-controls,
+#level-bar {
+    display: none;
+}
+
+/* All content hidden during boot */
+[data-mode="boot"] #site-header,
+[data-mode="boot"] main,
+[data-mode="boot"] #site-footer,
+[data-mode="boot"] #mode-switcher,
+[data-mode="boot"] #term-input-bar,
+[data-mode="boot"] #bbs-input-bar,
+[data-mode="boot"] #doom-hud,
+[data-mode="boot"] #matrix-canvas,
+[data-mode="boot"] #hacker-feed,
+[data-mode="boot"] #stats-panel,
+[data-mode="boot"] #term-output,
+[data-mode="boot"] #bbs-output,
+[data-mode="boot"] #scroll-controls,
+[data-mode="boot"] #level-bar {
+    display: none;
+}

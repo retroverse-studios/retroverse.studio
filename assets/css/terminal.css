@@ -1,0 +1,284 @@
+/* ═══════════════════════════════════════
+   TERMINAL MODE
+   Hacker 4-pane layout + Doom HUD
+   Same HTML, completely different presentation
+   ═══════════════════════════════════════ */
+
+/* Hide standard web chrome in terminal mode */
+#site-header { display: none; }
+#site-footer { display: none; }
+main { display: none; }
+
+/* Show terminal output container */
+#term-output {
+    display: block;
+    position: fixed;
+    top: 100px;
+    left: 220px;
+    right: 0;
+    bottom: 80px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    background: rgba(0,0,0,0.6);
+    z-index: 5;
+}
+
+/* ═══ TERMINAL PANELS ═══ */
+
+#matrix-canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: calc(50vh - 24px);
+    z-index: 10;
+    border-right: 2px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    background: #000;
+}
+
+#stats-panel {
+    display: block;
+    position: fixed;
+    top: calc(50vh - 24px);
+    left: 0;
+    width: 220px;
+    height: calc(50vh - 24px);
+    z-index: 10;
+    border-right: 2px solid var(--border);
+    background: #000;
+    overflow: hidden;
+    padding: 12px;
+}
+
+#stats-log {
+    font-family: var(--font);
+    font-size: 0.45rem;
+    color: var(--accent);
+    line-height: 2;
+    white-space: pre;
+}
+
+#hacker-feed {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 100px;
+    z-index: 10;
+    border-bottom: 2px solid var(--border);
+    background: rgba(0,0,0,0.85);
+    overflow: hidden;
+    padding: 8px 16px;
+}
+
+#hacker-log {
+    font-family: var(--font);
+    font-size: 0.4rem;
+    color: var(--secondary);
+    line-height: 2;
+    white-space: pre-wrap;
+    opacity: 0.7;
+}
+
+/* ═══ TERMINAL OUTPUT (main pane) ═══ */
+
+/* ═══ TERMINAL INPUT BAR ═══ */
+
+#term-input-bar {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    left: 220px;
+    right: 0;
+    bottom: 48px;
+    height: 32px;
+    z-index: 100;
+    background: #000;
+    border-top: 2px solid var(--border);
+    padding: 0 16px;
+    gap: 8px;
+}
+
+.term-prompt {
+    font-family: var(--font);
+    font-size: 0.5rem;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+#term-input {
+    flex: 1;
+    font-family: var(--font);
+    font-size: 0.55rem;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    outline: none;
+    caret-color: var(--accent);
+}
+
+/* ═══ DOOM HUD ═══ */
+
+#doom-hud {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    z-index: 200;
+    background: #1a0a0a;
+    border-top: 3px solid #4a2020;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.hud-cell {
+    text-align: center;
+    padding: 4px 16px;
+    border-right: 2px solid #4a2020;
+    min-width: 80px;
+}
+
+.hud-cell:last-child { border-right: none; }
+
+.hud-label {
+    font-family: var(--font);
+    font-size: 0.35rem;
+    color: #aa6666;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+}
+
+.hud-val {
+    font-family: var(--font);
+    font-size: 0.7rem;
+    color: var(--danger);
+    text-shadow: 0 0 10px rgba(255,51,51,0.5);
+    display: block;
+}
+
+.hud-wide { min-width: 140px; }
+
+.hud-bar {
+    width: 100%;
+    height: 8px;
+    background: #2a0a0a;
+    border: 1px solid #4a2020;
+    margin-top: 4px;
+}
+
+.hud-fill {
+    height: 100%;
+    width: 20%;
+    background: var(--accent);
+    transition: width 0.5s;
+}
+
+.hud-fill--b {
+    background: var(--secondary);
+    width: 80%;
+}
+
+.hud-face {
+    min-width: 60px;
+    border-right: 2px solid #4a2020;
+}
+
+#hud-face-art {
+    font-family: var(--font);
+    font-size: 0.7rem;
+    color: var(--warn);
+    line-height: 1;
+}
+
+/* ═══ TERMINAL OUTPUT STYLING ═══ */
+/* Used by JS when rendering content into the terminal */
+
+.term-line {
+    font-family: var(--font);
+    font-size: 0.55rem;
+    line-height: 2;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.term-line--accent { color: var(--accent); }
+.term-line--primary { color: var(--primary); }
+.term-line--secondary { color: var(--secondary); }
+.term-line--muted { color: var(--muted); }
+.term-line--danger { color: var(--danger); }
+.term-line--warn { color: var(--warn); }
+.term-line--system {
+    color: var(--muted);
+    font-style: italic;
+    opacity: 0.6;
+}
+
+.term-block {
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-left: 3px solid var(--accent);
+    background: rgba(0,255,153,0.03);
+}
+
+.term-table {
+    font-family: var(--font);
+    font-size: 0.5rem;
+    border-collapse: collapse;
+    margin: 8px 0;
+}
+
+.term-table td, .term-table th {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+    color: var(--text);
+}
+
+.term-table th {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+}
+
+/* ═══ RESPONSIVE ═══ */
+
+@media (max-width: 768px) {
+    #matrix-canvas,
+    #stats-panel {
+        display: none !important;
+    }
+
+    #hacker-feed {
+        left: 0;
+        height: 60px;
+    }
+
+    #term-output {
+        left: 0;
+        top: 60px;
+    }
+
+    #term-input-bar {
+        left: 0;
+    }
+}
+
+/* ═══ SIDEBAR TOGGLE ═══ */
+
+body.panels-hidden #matrix-canvas,
+body.panels-hidden #stats-panel {
+    display: none;
+}
+
+body.panels-hidden #hacker-feed,
+body.panels-hidden #term-output,
+body.panels-hidden #term-input-bar {
+    left: 0;
+}

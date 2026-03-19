@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Mobile menu toggle
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    var mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    var navLinks = document.querySelector('.nav-links');
 
     if (mobileMenuToggle && navLinks) {
         mobileMenuToggle.addEventListener('click', function () {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Intersection Observer for fade-in elements
     var lazyElements = document.querySelectorAll(
-        '.game-featured-image, .game-card-wide-image, .about-image'
+        '.game-card__image, .about-image'
     );
 
     if ('IntersectionObserver' in window) {
@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
             observer.observe(el);
         });
     } else {
-        // Fallback: show everything immediately
         lazyElements.forEach(function (el) {
             el.classList.add('visible');
         });
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 msg.className += ' error';
         }
 
-        var formContainer = document.querySelector('.newsletter .container');
+        var formContainer = newsletterForm.closest('.newsletter-box');
         if (formContainer) {
             formContainer.insertBefore(msg, newsletterForm);
         }
@@ -98,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var errorMsg = document.createElement('div');
             errorMsg.className = 'newsletter-message error';
             errorMsg.textContent = 'Please enter a valid email address.';
-            var container = document.querySelector('.newsletter .container');
+            var container = newsletterForm.closest('.newsletter-box');
             if (container) container.insertBefore(errorMsg, newsletterForm);
             return;
         }
