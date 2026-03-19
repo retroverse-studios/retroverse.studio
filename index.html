@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetroVerse Studios | Where Classic Pixels Meet Next-Gen Choices</title>
+    <meta name="description" content="Independent game studio from Perth, Australia. Fusing retro-pixel aesthetics with cutting-edge decision mechanics. Home of SwipeVerse, Glomph Maze, Stella's Evolution, and creative tools.">
     <link rel="icon" href="assets/images/retroversestudioslogo.png" type="image/png">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -15,12 +16,13 @@
                 <a href="#" class="logo">
                     <img src="assets/images/retroversestudioslogo.png" alt="RetroVerse Studios Logo">
                 </a>
-                <button class="mobile-menu-toggle">☰</button>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">&#9776;</button>
                 <ul class="nav-links">
                     <li><a href="#games">Games</a></li>
+                    <li><a href="#tools">Tools</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#newsletter">Newsletter</a></li>
-                    <li><a href="#" class="btn">Get Updates</a></li>
+                    <li><a href="#newsletter" class="btn btn-sm">Get Updates</a></li>
                 </ul>
             </nav>
         </div>
@@ -28,14 +30,37 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="scanlines"></div>
         <div class="container">
             <div class="hero-content">
-                <h1 class="pixel-text">Welcome to RetroVerse Studios</h1>
-                <p>Where Classic Pixels Meet Next-Gen Choices</p>
+                <p class="hero-label">Independent Game Studio &bull; Perth, Australia</p>
+                <h1 class="pixel-text glitch" data-text="RetroVerse Studios">RetroVerse Studios</h1>
+                <p class="hero-tagline">Where Classic Pixels Meet Next-Gen Choices</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Games</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Platforms</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <span class="stat-number pixel-text">&infin;</span>
+                        <span class="stat-label">Realities</span>
+                    </div>
+                </div>
                 <a href="#games" class="btn">Discover Our Games</a>
             </div>
         </div>
         <div class="pixel-animation"></div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
     </section>
 
     <!-- Games Section -->
@@ -43,38 +68,121 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="pixel-text">Our Games</h2>
-                <p>Discover our pixel-perfect decision-driven games that blend nostalgic Atari-era aesthetics with modern, data-driven mechanics.</p>
+                <p>Pixel-perfect, decision-driven games blending nostalgic aesthetics with modern mechanics.</p>
             </div>
-            
-            <div class="games-grid">
-                <!-- SwipeVerse -->
-                <div class="game-card">
-                    <div class="game-image" style="background-image: url('assets/images/games/game1.png');"></div>
-                    <div class="game-details">
-                        <h3 class="pixel-text">Swipe<span>Verse</span></h3>
-                        <p>Shape evolving societies one swipe at a time in this card-based societal simulation.</p>
-                        <div class="game-tags">
-                            <span class="tag">Android</span>
-                            <span class="tag">Windows</span>
-                            <span class="tag">macOS</span>
+
+            <!-- Reality Reigns - Featured -->
+            <div class="game-featured">
+                <div class="game-featured-image" style="background-image: url('assets/images/games/game1.png');"></div>
+                <div class="game-featured-content">
+                    <div class="game-badge">Flagship Title</div>
+                    <h3 class="pixel-text">Swipe<span>Verse</span></h3>
+                    <p class="game-description">Shape the fate of entire realities with every swipe. A card-based survival strategy game powered by AI-generated narratives. Navigate cyberpunk dystopias, mystical kingdoms, and galactic empires &mdash; or create your own.</p>
+                    <div class="game-features">
+                        <div class="game-feature">
+                            <span class="feature-icon">&#127922;</span>
+                            <span>Swipe-based decisions</span>
                         </div>
-                        <a href="#" class="btn">Learn More</a>
+                        <div class="game-feature">
+                            <span class="feature-icon">&#129302;</span>
+                            <span>AI-generated storylines</span>
+                        </div>
+                        <div class="game-feature">
+                            <span class="feature-icon">&#127912;</span>
+                            <span>Create your own realities</span>
+                        </div>
+                        <div class="game-feature">
+                            <span class="feature-icon">&#128247;</span>
+                            <span>Works offline (PWA)</span>
+                        </div>
+                    </div>
+                    <div class="game-tags">
+                        <span class="tag">Web</span>
+                        <span class="tag">Android</span>
+                        <span class="tag">Windows</span>
+                        <span class="tag">macOS</span>
+                    </div>
+                    <a href="https://swipeverse.app" class="btn" target="_blank" rel="noopener">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Stella's Evolution -->
+            <div class="game-card-wide">
+                <div class="game-card-wide-image" style="background-image: url('assets/images/games/game2.png');"></div>
+                <div class="game-card-wide-content">
+                    <div class="game-badge coming-soon">Coming Soon</div>
+                    <h3 class="pixel-text">Stella's <span>Evolution</span></h3>
+                    <p>A four-arc puzzle journey through the Atari 2600's hardware evolution. Inspired by Thomas Was Alone, guide geometric AI beings through increasingly complex realities &mdash; from 2K simplicity to bankswitched brilliance. Chase the beam.</p>
+                    <div class="game-tags">
+                        <span class="tag">Windows</span>
+                        <span class="tag">macOS</span>
+                        <span class="tag">Web</span>
                     </div>
                 </div>
-                
-                <!-- Stella's Evolution -->
-                <div class="game-card">
-                    <div class="game-image" style="background-image: url('assets/images/games/game2.png');"></div>
-                    <div class="game-details">
-                        <h3 class="pixel-text">Stella's <span>Evolution</span></h3>
-                        <p>A four-part homage to Atari 2600's golden age. Experience four decades of Atari-style evolution.</p>
-                        <div class="game-tags">
-                            <span class="tag">Coming Soon</span>
-                            <span class="tag">Windows</span>
-                            <span class="tag">macOS</span>
-                        </div>
-                        <a href="#" class="btn">Coming Soon</a>
+            </div>
+
+            <!-- Glomph Maze -->
+            <div class="game-card-wide">
+                <div class="game-card-wide-image glomph-placeholder"></div>
+                <div class="game-card-wide-content">
+                    <div class="game-badge">Terminal Classic</div>
+                    <h3 class="pixel-text">Glomph <span>Maze</span></h3>
+                    <p>A text-based Pac-Man clone for the terminal. Navigate mazes, collect dots, and avoid ghosts in pure curses-rendered glory. Revived from a 1998 classic with community-contributed maze layouts and cross-platform support.</p>
+                    <div class="game-features-inline">
+                        <span class="game-feature-inline">
+                            <span class="feature-icon">&#128123;</span> Ghost AI
+                        </span>
+                        <span class="game-feature-inline">
+                            <span class="feature-icon">&#127918;</span> Custom mazes
+                        </span>
+                        <span class="game-feature-inline">
+                            <span class="feature-icon">&#128187;</span> Terminal-native
+                        </span>
                     </div>
+                    <div class="game-tags">
+                        <span class="tag">Linux</span>
+                        <span class="tag">macOS</span>
+                        <span class="tag">Windows</span>
+                    </div>
+                    <a href="https://github.com/retroverse-studios/glomph-maze" class="btn btn-sm" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools & Apps Section -->
+    <section class="tools" id="tools">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="pixel-text">Tools & Apps</h2>
+                <p>Creative tools built with the same retro-meets-modern philosophy.</p>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Karaoke Stage -->
+                <div class="tool-card">
+                    <div class="tool-icon">&#127908;</div>
+                    <h3 class="pixel-text">Karaoke <span>Stage</span></h3>
+                    <p>A themed karaoke player supporting CDG+MP3 and LRC formats. Organise songs by occasion, create custom categories, and bulk-import entire collections. Runs in your browser &mdash; no server required.</p>
+                    <div class="game-tags">
+                        <span class="tag">Electron</span>
+                        <span class="tag">React</span>
+                        <span class="tag">TypeScript</span>
+                    </div>
+                    <a href="https://github.com/retroverse-studios/karaoke-stage" class="btn btn-sm" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+
+                <!-- Visual Cataloguer -->
+                <div class="tool-card">
+                    <div class="tool-icon">&#128247;</div>
+                    <h3 class="pixel-text">Visual <span>Cataloguer</span></h3>
+                    <p>Batch-catalogue physical collections using QR-code dividers and AI-powered identification. Photograph your retro games, books, or vinyl &mdash; get a searchable inventory database in minutes.</p>
+                    <div class="game-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">AI</span>
+                    </div>
+                    <a href="https://github.com/retroverse-studios/visual-cataloguer" class="btn btn-sm" target="_blank" rel="noopener">View on GitHub</a>
                 </div>
             </div>
         </div>
@@ -86,10 +194,19 @@
             <div class="about-content">
                 <div class="about-image" style="background-image: url('assets/images/about/about-bg.png');"></div>
                 <div class="about-text">
-                    <h2 class="pixel-text">About RetroVerse Studios</h2>
-                    <p>RetroVerse Studios is an independent game studio based in Perth, Australia, fusing retro-pixel aesthetics with cutting-edge decision algorithms. We're passionate about reigniting the charm of classic pixel games while innovating with data-driven decision mechanics.</p>
-                    <p>Our vision is to create games that appeal to both retro enthusiasts and strategy gamers alike, delivering unforgettable gaming experiences across multiple platforms.</p>
-                    <a href="#" class="btn">Meet The Team</a>
+                    <h2 class="pixel-text">About the Studio</h2>
+                    <p>RetroVerse Studios is an independent game studio based in Perth, Australia. We fuse retro-pixel aesthetics with cutting-edge decision algorithms &mdash; reigniting the charm of classic games while innovating with AI-driven mechanics.</p>
+                    <p>Our games appeal to retro enthusiasts and strategy gamers alike. Every title we build explores the tension between nostalgia and possibility &mdash; what happens when you give 8-bit worlds modern intelligence?</p>
+                    <div class="about-values">
+                        <div class="value">
+                            <h4 class="pixel-text">Retro</h4>
+                            <p>Pixel art, CRT aesthetics, and hardware-era design constraints as creative fuel.</p>
+                        </div>
+                        <div class="value">
+                            <h4 class="pixel-text">Verse</h4>
+                            <p>Multiple realities, branching narratives, and player-created worlds.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,7 +216,7 @@
     <section class="newsletter" id="newsletter">
         <div class="container">
             <h2 class="pixel-text">Stay Updated</h2>
-            <p>Subscribe to our newsletter for exclusive dev updates, pixel art reveals, and early-access opportunities.</p>
+            <p>Dev updates, pixel art reveals, and early-access opportunities. No spam &mdash; just signal.</p>
             <form class="newsletter-form">
                 <input type="email" name="email" placeholder="Your email address" required>
                 <button type="submit" class="pixel-text">Subscribe</button>
@@ -110,22 +227,17 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <ul class="footer-links">
-                <li><a href="#">Games</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-            </ul>
-            
-            <div class="social-links">
-                <a href="#"><span>🐦</span></a>
-                <a href="#"><span>📸</span></a>
-                <a href="#"><span>🎮</span></a>
-                <a href="#"><span>🎬</span></a>
+            <div class="footer-logo">
+                <img src="assets/images/retroversestudioslogo.png" alt="RetroVerse Studios" height="40">
             </div>
-            
-            <p class="copyright">&copy; 2025 RetroVerse Studios. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#games">Games</a></li>
+                <li><a href="#tools">Tools</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#newsletter">Newsletter</a></li>
+                <li><a href="https://github.com/retroverse-studios" target="_blank" rel="noopener">GitHub</a></li>
+            </ul>
+            <p class="copyright">&copy; 2026 RetroVerse Studios. All rights reserved. Perth, Australia.</p>
         </div>
     </footer>
     <script src="assets/js/main.js"></script>
