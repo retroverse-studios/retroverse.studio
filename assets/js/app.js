@@ -137,7 +137,7 @@
     function boot() {
         var bootEl = $('#boot-text');
         var fillEl = $('#boot-fill');
-        var modes = ['terminal', 'bbs', 'retro'];
+        var modes = ['terminal', 'bbs', 'retro', 'forum'];
         var chosenMode = modes[Math.floor(Math.random() * modes.length)];
 
         // Check URL hash for forced mode
@@ -264,6 +264,7 @@
         if (mode === 'terminal') initTerminal();
         if (mode === 'bbs') initBBS();
         if (mode === 'retro') initRetro();
+        if (mode === 'forum') initForum();
 
         setFace('cool');
         setTimeout(function () { setFace('normal'); }, 2000);
@@ -386,7 +387,7 @@
                 termPrint('  panels        Toggle side panels');
                 termPrint('  matrix        Toggle matrix rain');
                 termPrint('  ascii         Show ASCII art');
-                termPrint('  mode <name>   Switch mode (bbs/retro/terminal)');
+                termPrint('  mode <name>   Switch mode (bbs/retro/terminal/forum)');
                 termPrint('  reboot        Reboot into random mode');
                 termPrint('');
                 termPrint('KEYBOARD:', 'muted');
@@ -530,7 +531,7 @@
                 break;
 
             case 'mode':
-                if (['bbs', 'retro', 'terminal'].indexOf(arg) !== -1) {
+                if (['bbs', 'retro', 'terminal', 'forum'].indexOf(arg) !== -1) {
                     termPrint('Switching to ' + arg.toUpperCase() + '...', 'warn');
                     setTimeout(function () { switchMode(arg); }, 500);
                 } else {
@@ -726,7 +727,7 @@
     }
 
     function cycleMode() {
-        var modes = ['terminal', 'bbs', 'retro'];
+        var modes = ['terminal', 'bbs', 'retro', 'forum'];
         switchMode(modes[(modes.indexOf(state.mode) + 1) % modes.length]);
     }
 
@@ -939,6 +940,7 @@
                 bbsPrint('  [1]  Terminal Mode  (hacker aesthetic)', 'yellow');
                 bbsPrint('  [2]  BBS Mode  (you are here)', 'yellow');
                 bbsPrint('  [3]  Retro Mode  (side-scrolling 8-bit)', 'yellow');
+                bbsPrint('  [4]  Forum Mode  (message board)', 'yellow');
                 bbsPrint('');
                 bbsPrint('  [B]  Back to Main Menu', 'gray');
                 break;
@@ -963,6 +965,7 @@
                 case '1': switchMode('terminal'); break;
                 case '2': showBBSPage('main'); break;
                 case '3': switchMode('retro'); break;
+                case '4': switchMode('forum'); break;
                 case 'b': showBBSPage('main'); break;
                 default: bbsPrint('  Unknown selection.', 'red');
             }
@@ -1199,6 +1202,308 @@
             cycleMode();
         }
         handleKonami(e);
+    }
+
+    // ═══════════════════════════════════════
+    // FORUM MODE
+    // ═══════════════════════════════════════
+
+    var FORUM_USERS = [
+        { name: 'SysOp',       role: 'Admin',     posts: 847, avatar: '[>>]', color: '#00ff99' },
+        { name: 'RetroFan42',  role: 'Regular',   posts: 312, avatar: '(^^)', color: '#ccccff' },
+        { name: 'PixelDave',   role: 'Regular',   posts: 189, avatar: '{**}', color: '#ccccff' },
+        { name: 'GhostAI_99',  role: 'Moderator', posts: 523, avatar: '[@@]', color: '#cc44cc' },
+        { name: 'NeonRunner',  role: 'Regular',   posts: 95,  avatar: '(<>)', color: '#ccccff' },
+        { name: 'ByteMe',      role: 'Regular',   posts: 41,  avatar: '(!!)', color: '#ccccff' },
+        { name: 'ArcadePunk',  role: 'Regular',   posts: 267, avatar: '[##]', color: '#ccccff' },
+        { name: 'CRTjunkie',   role: 'Regular',   posts: 158, avatar: '{~~}', color: '#ccccff' }
+    ];
+
+    var FORUM_REPLIES = {
+        'swipeverse': [
+            { user: 1, text: 'The AI storylines are genuinely surprising. Every playthrough feels different.', date: 'Mar 15, 2026' },
+            { user: 2, text: 'Works great offline on my commute. The PWA support is solid.', date: 'Mar 16, 2026' },
+            { user: 3, text: 'Anyone tried creating a custom universe yet? The editor is deep.', date: 'Mar 17, 2026' },
+            { user: 4, text: 'Cyberpunk dystopia is my favourite reality so far. The moral dilemmas are intense.', date: 'Mar 18, 2026' },
+            { user: 5, text: 'Downloaded on Android, runs smooth. Swipe controls feel natural.', date: 'Mar 19, 2026' }
+        ],
+        'stellas-evolution': [
+            { user: 6, text: 'As an Atari collector, I cannot wait for this. The concept is brilliant.', date: 'Mar 12, 2026' },
+            { user: 3, text: 'Thomas Was Alone meets hardware history? Take my money.', date: 'Mar 14, 2026' },
+            { user: 7, text: 'Will there be actual 2600 ROMs to play at each arc?', date: 'Mar 16, 2026' }
+        ],
+        'glomph-maze': [
+            { user: 7, text: 'Installed via pip, works perfectly in my terminal. Ghost AI is legit smart.', date: 'Mar 10, 2026' },
+            { user: 1, text: 'Just added three new community mazes! Check the GitHub for layouts.', date: 'Mar 11, 2026' },
+            { user: 4, text: 'The curses rendering is surprisingly smooth. Nostalgic feels.', date: 'Mar 13, 2026' },
+            { user: 2, text: 'Can confirm it works great over SSH too. Perfect for my home server.', date: 'Mar 15, 2026' }
+        ],
+        'incident-zero': [
+            { user: 3, text: 'Played this at a meetup with 5 people. The attacker role is incredibly fun.', date: 'Mar 08, 2026' },
+            { user: 6, text: '171 cards is impressive. How long is a typical session?', date: 'Mar 09, 2026' },
+            { user: 0, text: 'Typical game runs 45-90 min depending on the module. The MITRE mapping adds real educational value.', date: 'Mar 09, 2026' },
+            { user: 5, text: 'Printed the tabletop version at work. Security team loved it for training.', date: 'Mar 14, 2026' }
+        ],
+        'karaoke-stage': [
+            { user: 2, text: 'Finally a karaoke app that handles CDG properly. Bulk import saved me hours.', date: 'Mar 06, 2026' },
+            { user: 7, text: 'The theming options are fun. Made a neon 80s theme for a party.', date: 'Mar 12, 2026' }
+        ],
+        'visual-cataloguer': [
+            { user: 4, text: 'Used this for my retro game collection. AI identification is surprisingly accurate.', date: 'Mar 05, 2026' },
+            { user: 1, text: 'QR divider system is genius. Scanned 200 books in an afternoon.', date: 'Mar 08, 2026' },
+            { user: 6, text: 'Docker setup was painless. Any plans for a web UI?', date: 'Mar 11, 2026' }
+        ]
+    };
+
+    var forumOutput = null;
+
+    function initForum() {
+        forumOutput = $('#forum-output');
+        forumOutput.innerHTML = '';
+
+        // Hide other mode chrome
+        $('#term-input-bar').style.display = 'none';
+        $('#bbs-input-bar').style.display = 'none';
+        $('#doom-hud').style.display = 'none';
+
+        renderForum();
+    }
+
+    function renderForum() {
+        var html = '';
+
+        // Header
+        html += '<div class="forum-header">';
+        html += '  <div class="forum-header-left">';
+        html += '    <h1>RetroVerse Forums</h1>';
+        html += '    <p>Where pixels meet discussion  |  Est. 2026  |  Perth, AU</p>';
+        html += '  </div>';
+        html += '  <div class="forum-header-right">';
+        html += '    Welcome, <span>visitor</span><br>';
+        html += '    Users online: <span>1</span><br>';
+        html += '    Visitor #<span>' + state.visitorNumber + '</span>';
+        html += '  </div>';
+        html += '</div>';
+
+        // Nav bar
+        html += '<div class="forum-nav">';
+        html += '  <a class="active">Board Index</a>';
+        html += '  <a onclick="window.open(\'https://github.com/retroverse-studios\',\'_blank\')">GitHub</a>';
+        html += '</div>';
+
+        // Games category
+        html += renderCategory('Games', GAMES.map(function (g, i) {
+            var replies = FORUM_REPLIES[g.id] || [];
+            var lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
+            var lastUser = lastReply ? FORUM_USERS[lastReply.user] : FORUM_USERS[0];
+            return {
+                id: g.id,
+                title: g.name,
+                sticky: i === 0,
+                author: 'SysOp',
+                preview: g.desc.substring(0, 60) + '...',
+                replies: replies.length,
+                views: 200 + Math.floor(Math.random() * 800),
+                lastAuthor: lastUser.name,
+                lastDate: lastReply ? lastReply.date : 'Mar 2026',
+                game: g,
+                replyData: replies
+            };
+        }));
+
+        // Tools category
+        html += renderCategory('Tools & Apps', TOOLS.map(function (t) {
+            var replies = FORUM_REPLIES[t.id] || [];
+            var lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
+            var lastUser = lastReply ? FORUM_USERS[lastReply.user] : FORUM_USERS[0];
+            return {
+                id: t.id,
+                title: t.name,
+                sticky: false,
+                author: 'SysOp',
+                preview: t.desc.substring(0, 60) + '...',
+                replies: replies.length,
+                views: 100 + Math.floor(Math.random() * 400),
+                lastAuthor: lastUser.name,
+                lastDate: lastReply ? lastReply.date : 'Mar 2026',
+                tool: t,
+                replyData: replies
+            };
+        }));
+
+        // About (as a sticky meta thread)
+        html += renderCategory('Meta', [{
+            id: 'about',
+            title: 'About RetroVerse Studios',
+            sticky: true,
+            author: 'SysOp',
+            preview: 'Independent game studio from Perth, Australia...',
+            replies: 0,
+            views: state.visitorNumber - 41999,
+            lastAuthor: 'SysOp',
+            lastDate: 'Mar 2026',
+            aboutThread: true,
+            replyData: []
+        }, {
+            id: 'newsletter',
+            title: 'Subscribe to Updates',
+            sticky: true,
+            author: 'SysOp',
+            preview: 'Dev updates, pixel art reveals, and early access...',
+            replies: 0,
+            views: Math.floor((state.visitorNumber - 41999) * 0.4),
+            lastAuthor: 'SysOp',
+            lastDate: 'Mar 2026',
+            newsletterThread: true,
+            replyData: []
+        }]);
+
+        // Board stats
+        var totalReplies = 0;
+        Object.keys(FORUM_REPLIES).forEach(function (k) { totalReplies += FORUM_REPLIES[k].length; });
+        html += '<div class="forum-stats">';
+        html += '  <strong>' + (GAMES.length + TOOLS.length + 2) + '</strong> threads | ';
+        html += '  <strong>' + totalReplies + '</strong> replies | ';
+        html += '  <strong>1</strong> user online | ';
+        html += '  Newest member: <strong>visitor</strong><br>';
+        html += '  All games are open source and free. ';
+        html += '  Board powered by RetroVerse OS v2.0';
+        html += '</div>';
+
+        forumOutput.innerHTML = html;
+
+        // Wire up thread clicks
+        forumOutput.querySelectorAll('.forum-thread').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var threadId = el.dataset.threadId;
+                var body = forumOutput.querySelector('.forum-thread-body[data-thread-id="' + threadId + '"]');
+                if (body) {
+                    var isVisible = body.classList.contains('visible');
+                    // Collapse all
+                    forumOutput.querySelectorAll('.forum-thread-body').forEach(function (b) { b.classList.remove('visible'); });
+                    forumOutput.querySelectorAll('.forum-thread').forEach(function (t) { t.classList.remove('expanded'); });
+                    // Toggle this one
+                    if (!isVisible) {
+                        body.classList.add('visible');
+                        el.classList.add('expanded');
+                        setTimeout(function () { body.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+                    }
+                }
+            });
+        });
+    }
+
+    function renderCategory(title, threads) {
+        var html = '<div class="forum-category">';
+        html += '<div class="forum-cat-header">';
+        html += '  <span class="forum-cat-title">' + title + '</span>';
+        html += '  <span class="forum-cat-col">Replies</span>';
+        html += '  <span class="forum-cat-col">Views</span>';
+        html += '  <span class="forum-cat-col">Last Post</span>';
+        html += '</div>';
+
+        threads.forEach(function (t) {
+            // Thread row
+            html += '<div class="forum-thread' + (t.sticky ? ' forum-sticky' : '') + '" data-thread-id="' + t.id + '">';
+            html += '  <div class="forum-thread-info">';
+            html += '    <div class="forum-thread-title">';
+            html += '      <span class="thread-icon">' + (t.sticky ? '[*]' : '[ ]') + '</span>';
+            html += '      ' + esc(t.title);
+            html += '    </div>';
+            html += '    <div class="forum-thread-meta">by <span class="author">' + esc(t.author) + '</span> - "' + esc(t.preview) + '"</div>';
+            html += '  </div>';
+            html += '  <div class="forum-stat">' + t.replies + '</div>';
+            html += '  <div class="forum-stat">' + t.views + '</div>';
+            html += '  <div class="forum-last-post">';
+            html += '    <span class="last-author">' + esc(t.lastAuthor) + '</span><br>';
+            html += '    ' + esc(t.lastDate);
+            html += '  </div>';
+            html += '</div>';
+
+            // Thread body (hidden until clicked)
+            html += '<div class="forum-thread-body" data-thread-id="' + t.id + '">';
+            html += renderOP(t);
+            t.replyData.forEach(function (reply) {
+                html += renderReply(reply);
+            });
+            html += '</div>';
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    function renderOP(thread) {
+        var sysop = FORUM_USERS[0];
+        var html = '<div class="forum-post">';
+        html += '  <div class="forum-post-author">';
+        html += '    <div class="forum-post-avatar" style="color:' + sysop.color + '">' + sysop.avatar + '</div>';
+        html += '    <div class="forum-post-name" style="color:' + sysop.color + '">' + sysop.name + '</div>';
+        html += '    <div class="forum-post-role">' + sysop.role + '</div>';
+        html += '    <div class="forum-post-count">Posts: ' + sysop.posts + '</div>';
+        html += '  </div>';
+        html += '  <div class="forum-post-content">';
+        html += '    <div class="forum-post-date">Posted: Mar 2026</div>';
+
+        if (thread.game) {
+            var g = thread.game;
+            html += '    <div class="forum-post-text">' + esc(g.desc) + '</div>';
+            if (g.features.length) {
+                html += '    <div class="forum-post-text highlight">';
+                g.features.forEach(function (f) { html += '> ' + esc(f) + '<br>'; });
+                html += '    </div>';
+            }
+            html += '    <div class="forum-post-tags">';
+            g.platforms.split(', ').forEach(function (p) {
+                html += '<span class="forum-post-tag">' + esc(p) + '</span>';
+            });
+            html += '    </div>';
+            if (g.url) {
+                html += '    <a href="' + g.url + '" class="forum-post-link" target="_blank" rel="noopener">' + (g.status === 'FLAGSHIP' ? 'Play Now' : 'View') + '</a>';
+            }
+        } else if (thread.tool) {
+            var tool = thread.tool;
+            html += '    <div class="forum-post-text">' + esc(tool.desc) + '</div>';
+            html += '    <div class="forum-post-text">Tech: <span class="highlight">' + esc(tool.tech) + '</span></div>';
+            if (tool.url) {
+                html += '    <a href="' + tool.url + '" class="forum-post-link" target="_blank" rel="noopener">View on GitHub</a>';
+            }
+        } else if (thread.aboutThread) {
+            html += '    <div class="forum-post-text">RetroVerse Studios is an independent game studio based in Perth, Australia. We fuse retro-pixel aesthetics with cutting-edge decision algorithms.</div>';
+            html += '    <div class="forum-post-text"><span class="highlight">RETRO:</span> Pixel art, CRT aesthetics, and hardware-era design constraints as creative fuel.</div>';
+            html += '    <div class="forum-post-text"><span class="highlight">VERSE:</span> Multiple realities, branching narratives, and player-created worlds.</div>';
+            html += '    <div class="forum-post-text">All games are open source and free.</div>';
+        } else if (thread.newsletterThread) {
+            html += '    <div class="forum-post-text">Dev updates, pixel art reveals, and early-access opportunities. No spam - just signal.</div>';
+            html += '    <div class="forum-post-text">Visit <span class="highlight">retroverse.studio</span> in retro mode to use the signup form.</div>';
+        }
+
+        html += '  </div>';
+        html += '</div>';
+        return html;
+    }
+
+    function renderReply(reply) {
+        var user = FORUM_USERS[reply.user];
+        var html = '<div class="forum-post forum-post--reply">';
+        html += '  <div class="forum-post-author">';
+        html += '    <div class="forum-post-avatar" style="color:' + user.color + '">' + user.avatar + '</div>';
+        html += '    <div class="forum-post-name" style="color:' + user.color + '">' + user.name + '</div>';
+        html += '    <div class="forum-post-role">' + user.role + '</div>';
+        html += '    <div class="forum-post-count">Posts: ' + user.posts + '</div>';
+        html += '  </div>';
+        html += '  <div class="forum-post-content">';
+        html += '    <div class="forum-post-date">' + esc(reply.date) + '</div>';
+        html += '    <div class="forum-post-text">' + esc(reply.text) + '</div>';
+        html += '  </div>';
+        html += '</div>';
+        return html;
+    }
+
+    function esc(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
     }
 
     // ═══════════════════════════════════════

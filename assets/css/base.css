@@ -263,6 +263,7 @@ img { max-width: 100%; height: auto; }
 #bbs-input-bar,
 #term-output,
 #bbs-output,
+#forum-output,
 #scroll-controls,
 #level-bar {
     display: none;
@@ -281,6 +282,7 @@ img { max-width: 100%; height: auto; }
 [data-mode="boot"] #stats-panel,
 [data-mode="boot"] #term-output,
 [data-mode="boot"] #bbs-output,
+[data-mode="boot"] #forum-output,
 [data-mode="boot"] #scroll-controls,
 [data-mode="boot"] #level-bar {
     display: none;
