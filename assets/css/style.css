@@ -558,6 +558,35 @@ nav {
     50% { opacity: 1; }
 }
 
+/* Incident Zero placeholder image */
+.incident-zero-placeholder {
+    background: var(--dark) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    opacity: 1 !important;
+}
+
+.incident-zero-placeholder::after {
+    content: '> BREACH DETECTED_';
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: #ff3333;
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+    animation: terminalBlink 1.2s step-end infinite;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes terminalBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
 /* Inline game features (compact) */
 .game-features-inline {
     display: flex;
