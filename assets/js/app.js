@@ -38,14 +38,15 @@
     // ═══ CONTENT DATA ═══
     var GAMES = [
         { id: 'swipeverse', name: 'SwipeVerse', status: 'FLAGSHIP', desc: 'Card-based survival strategy game powered by AI-generated narratives. Swipe to shape the fate of entire realities.', platforms: 'Web, Android, Windows, macOS', url: 'https://swipeverse.app', features: ['Swipe-based decisions', 'AI-generated storylines', 'Create your own realities', 'Works offline (PWA)'] },
-        { id: 'stellas-evolution', name: "Stella's Evolution", status: 'COMING SOON', desc: 'Four-arc puzzle journey through the Atari 2600 hardware evolution. From 2K simplicity to bankswitched brilliance.', platforms: 'Windows, macOS, Web', url: null, features: [] },
+        { id: 'stellas-evolution', name: "Stella's Evolution", status: 'GAME 1 OUT NOW', desc: 'Four-game puzzle-platformer series for real Atari 2600 hardware. From a bare 4K cartridge to an ARM coprocessor.', platforms: 'Atari 2600, Emulator', url: 'https://stellasevolution.retroverse.studio', features: ['Four games, one console', 'Real 2600 hardware', 'Game 1: Stella Was Alone (RC)'] },
         { id: 'glomph-maze', name: 'Glomph Maze', status: 'ACTIVE', desc: 'Text-based Pac-Man clone for the terminal. Navigate mazes, collect dots, avoid ghosts. Revived from a 1998 classic.', platforms: 'Linux, macOS, Windows', url: 'https://github.com/retroverse-studios/glomph-maze', features: ['Ghost AI', 'Custom mazes', 'Terminal-native'] },
-        { id: 'incident-zero', name: 'Incident Zero', status: 'TABLETOP+DIGITAL', desc: 'Cooperative cybersecurity strategy game. One attacks, the rest defend. Powered by the MITRE ATT&CK framework.', platforms: 'Multiplayer, Tabletop, Web', url: 'https://github.com/retroverse-studios/incident-zero', features: ['2-7 players', 'AI threat scenarios', '6 modules', '171 cards'] }
+        { id: 'incident-zero', name: 'Incident Zero', status: 'TABLETOP+DIGITAL', desc: 'Cooperative cybersecurity strategy game. One attacks, the rest defend. Powered by the MITRE ATT&CK framework.', platforms: 'Multiplayer, Tabletop, Web', url: 'https://incidentzero.retroverse.studio', features: ['2-7 players', 'AI threat scenarios', '6 modules', '171 cards'] }
     ];
 
     var TOOLS = [
-        { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Electron, React, TypeScript', url: 'https://github.com/retroverse-studios/karaoke-stage' },
-        { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://github.com/retroverse-studios/visual-cataloguer' }
+        { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Electron, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
+        { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://visualcataloguer.retroverse.studio' },
+        { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' }
     ];
 
     var SECTIONS = [
@@ -442,7 +443,7 @@
                 termPrint('  tools         List development tools');
                 termPrint('  about         About the studio');
                 if (NEWSLETTER_ENABLED) termPrint('  subscribe     Newsletter signup');
-                termPrint('  open <1-6>    Open game/tool link');
+                termPrint('  open <1-7>    Open game/tool link');
                 termPrint('  clear         Clear terminal');
                 termPrint('  panels        Toggle side panels');
                 termPrint('  matrix        Toggle matrix rain');
@@ -1341,6 +1342,10 @@
             { user: 4, text: 'Used this for my retro game collection. AI identification is surprisingly accurate.', date: 'Mar 05, 2026' },
             { user: 1, text: 'QR divider system is genius. Scanned 200 books in an afternoon.', date: 'Mar 08, 2026' },
             { user: 6, text: 'Docker setup was painless. Any plans for a web UI?', date: 'Mar 11, 2026' }
+        ],
+        'virtual-lanes': [
+            { user: 5, text: 'Been journalling my league nights for a month. The simulated rivals are weirdly motivating.', date: 'Jun 21, 2026' },
+            { user: 2, text: 'Installed as a PWA, works perfectly offline at the alley. No signal, no problem.', date: 'Jun 28, 2026' }
         ]
     };
 
