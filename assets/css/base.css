@@ -112,6 +112,14 @@ img { max-width: 100%; height: auto; }
     transition: width 0.15s;
 }
 
+#boot-skip {
+    margin-top: 24px;
+    font-family: var(--font);
+    font-size: 0.55rem;
+    color: var(--muted);
+    animation: blink 1.2s step-end infinite;
+}
+
 /* ═══════════════════════════════════════
    MODE SWITCHER (floating pill)
    ═══════════════════════════════════════ */
@@ -267,6 +275,20 @@ img { max-width: 100%; height: auto; }
 #scroll-controls,
 #level-bar {
     display: none;
+}
+
+/* ═══════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    html { scroll-behavior: auto; }
+    .scanlines { display: none; }
 }
 
 /* All content hidden during boot */

@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /scripts/process-email.php
-Disallow: /scripts/admin/
+Disallow: /api/
 
 Sitemap: https://retroverse.studio/sitemap.xml

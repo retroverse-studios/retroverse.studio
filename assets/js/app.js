@@ -8,6 +8,8 @@
 (function () {
     'use strict';
 
+    var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // ═══ STATE ═══
     var state = {
         mode: 'boot',
@@ -19,6 +21,7 @@
         idleTimer: null,
         idleCount: 0,
         matrixAnim: null,
+        matrixResize: null,
         hackerAnim: null,
         statsAnim: null,
         autoScrollTimer: null,
@@ -63,7 +66,7 @@
         '[SYSTEM] All our games are open source and free!',
         '[SYSTEM] Type "subscribe" to join the newsletter.',
         '[SYSTEM] Try the Konami code... up up down down left right left right b a',
-        '[SYSTEM] You are visitor #' + (state.visitorNumber || '???') + ' to this reality.'
+        '[SYSTEM] You are visitor #{visitor} to this reality.'
     ];
 
     var HACKER_LINES = [
@@ -102,7 +105,7 @@
     var BOOT_TIPS = [
         'TIP: All RetroVerse games are open source!',
         'TIP: Try the Konami code in any mode...',
-        'TIP: This site has 3 display modes. Hit the reboot button to randomise!',
+        'TIP: This site has 4 display modes. Hit the reboot button to randomise!',
         'TIP: In terminal mode, type "ascii" for ASCII art.',
         'TIP: SwipeVerse works offline as a PWA.',
         'TIP: Incident Zero has 171 unique cards.',
@@ -111,7 +114,7 @@
         'DID YOU KNOW: RetroVerse Studios is based in Perth, Australia.',
         'DID YOU KNOW: Stella\'s Evolution is inspired by the Atari 2600.',
         'FUN FACT: The terminal mode has a Doom-style HUD.',
-        'FUN FACT: You are visitor #' + '00000'.substring(0, 5 - String(Math.floor(Math.random() * 99999)).length) + Math.floor(Math.random() * 99999) + ' to this reality.'
+        'FUN FACT: You are visitor #{visitor} to this reality.'
     ];
 
     var DOOM_FACES = {
@@ -138,14 +141,19 @@
         var bootEl = $('#boot-text');
         var fillEl = $('#boot-fill');
         var modes = ['terminal', 'bbs', 'retro', 'forum'];
-        var chosenMode = modes[Math.floor(Math.random() * modes.length)];
+
+        // Terminal/BBS are keyboard-driven — on touch devices pick a touch-friendly reality
+        var isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        var pool = isTouch ? ['retro', 'forum'] : modes;
+        var chosenMode = pool[Math.floor(Math.random() * pool.length)];
 
         // Check URL hash for forced mode
         var hash = window.location.hash.replace('#mode-', '');
         if (modes.indexOf(hash) !== -1) chosenMode = hash;
 
         // Random boot tip
-        var tip = BOOT_TIPS[Math.floor(Math.random() * BOOT_TIPS.length)];
+        var tip = BOOT_TIPS[Math.floor(Math.random() * BOOT_TIPS.length)]
+            .replace('{visitor}', state.visitorNumber);
 
         // Rare glitch (1 in 8 chance)
         var glitchLine = '';
@@ -194,16 +202,39 @@
 
         var currentLine = 0;
         var text = '';
+        var bootTimer = null;
+        var finished = false;
+
+        function finishBoot() {
+            if (finished) return;
+            finished = true;
+            removeSkipListeners();
+            fillEl.style.width = '100%';
+            setTimeout(function () {
+                $('#boot-screen').classList.add('done');
+                setTimeout(function () {
+                    // Keep the URL hash-free on a random boot so reloads stay random;
+                    // only deliberate mode switches pin the reality in the URL
+                    switchMode(chosenMode, hash === chosenMode);
+                }, 500);
+            }, 400);
+        }
+
+        function skipBoot() {
+            clearTimeout(bootTimer);
+            bootEl.textContent = lines.join('\n');
+            finishBoot();
+        }
+
+        function removeSkipListeners() {
+            document.removeEventListener('keydown', skipBoot);
+            document.removeEventListener('pointerdown', skipBoot);
+        }
 
         function nextLine() {
+            if (finished) return;
             if (currentLine >= lines.length) {
-                fillEl.style.width = '100%';
-                setTimeout(function () {
-                    $('#boot-screen').classList.add('done');
-                    setTimeout(function () {
-                        switchMode(chosenMode);
-                    }, 500);
-                }, 400);
+                finishBoot();
                 return;
             }
 
@@ -219,15 +250,23 @@
             if (prevLine.indexOf('OK') !== -1) delay = 120;
             if (prevLine.indexOf('ERROR') !== -1 || prevLine.indexOf('WARNING') !== -1 || prevLine.indexOf('ALERT') !== -1) delay = 600;
             if (prevLine.indexOf('TIP') === 0 || prevLine.indexOf('DID') === 0 || prevLine.indexOf('FUN') === 0) delay = 800;
+            if (REDUCED_MOTION) delay = 15;
 
-            setTimeout(nextLine, delay);
+            bootTimer = setTimeout(nextLine, delay);
         }
 
-        setTimeout(nextLine, 500);
+        document.addEventListener('keydown', skipBoot);
+        document.addEventListener('pointerdown', skipBoot);
+        bootTimer = setTimeout(nextLine, 500);
     }
 
     // ═══ REBOOT ═══
     function reboot() {
+        // Clear any #mode-x hash so the reboot genuinely randomises
+        if (window.history && history.replaceState) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+
         // Reset boot screen
         var bootScreen = $('#boot-screen');
         bootScreen.classList.remove('done');
@@ -245,11 +284,16 @@
     }
 
     // ═══ MODE SWITCHING ═══
-    function switchMode(mode) {
+    function switchMode(mode, updateHash) {
         stopAnimations();
 
         state.mode = mode;
         document.documentElement.setAttribute('data-mode', mode);
+
+        // Reflect mode in the URL so the current reality is shareable
+        if (updateHash !== false && window.history && history.replaceState) {
+            history.replaceState(null, '', '#mode-' + mode);
+        }
 
         // Load mode-specific stylesheet
         $('#mode-stylesheet').href = 'assets/css/' + mode + '.css';
@@ -302,7 +346,11 @@
         input.onkeydown = handleTermKey;
         document.addEventListener('click', focusTermInput);
 
-        startMatrix();
+        if (REDUCED_MOTION) {
+            $('#matrix-canvas').style.display = 'none'; // opt back in with the "matrix" command
+        } else {
+            startMatrix();
+        }
         startHacker();
         startStats();
         startIdle();
@@ -382,7 +430,7 @@
                 termPrint('  tools         List development tools');
                 termPrint('  about         About the studio');
                 termPrint('  subscribe     Newsletter signup');
-                termPrint('  open <1-4>    Open game/tool link');
+                termPrint('  open <1-6>    Open game/tool link');
                 termPrint('  clear         Clear terminal');
                 termPrint('  panels        Toggle side panels');
                 termPrint('  matrix        Toggle matrix rain');
@@ -506,11 +554,17 @@
 
             case 'matrix':
                 var canvas = $('#matrix-canvas');
-                var vis = canvas && canvas.style.display !== 'none';
                 if (canvas) {
-                    canvas.style.display = vis ? 'none' : 'block';
-                    termPrint('Matrix rain: ' + (vis ? 'OFF' : 'ON'), vis ? 'muted' : 'accent');
-                    if (!vis) startMatrix();
+                    var vis = canvas.style.display !== 'none';
+                    if (vis) {
+                        canvas.style.display = 'none';
+                        stopMatrix();
+                        termPrint('Matrix rain: OFF', 'muted');
+                    } else {
+                        canvas.style.display = 'block';
+                        startMatrix();
+                        termPrint('Matrix rain: ON', 'accent');
+                    }
                 }
                 break;
 
@@ -535,7 +589,7 @@
                     termPrint('Switching to ' + arg.toUpperCase() + '...', 'warn');
                     setTimeout(function () { switchMode(arg); }, 500);
                 } else {
-                    termPrint('Modes: terminal, bbs, retro', 'muted');
+                    termPrint('Modes: terminal, bbs, retro, forum', 'muted');
                 }
                 break;
 
@@ -606,19 +660,21 @@
         var canvas = $('#matrix-canvas');
         if (!canvas || canvas.style.display === 'none') return;
 
+        stopMatrix(); // never stack intervals or resize listeners
+
         var ctx = canvas.getContext('2d');
         var chars = 'アイウエオカキクケコサシスセソタチツテト0123456789RETROVERSE';
+        var fontSize = 10;
+        var drops = [];
 
         function resize() {
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
+            var columns = Math.floor(canvas.width / fontSize);
+            while (drops.length < columns) drops.push(Math.random() * -100);
+            drops.length = columns;
         }
         resize();
-
-        var fontSize = 10;
-        var columns = Math.floor(canvas.width / fontSize);
-        var drops = [];
-        for (var i = 0; i < columns; i++) drops[i] = Math.random() * -100;
 
         function draw() {
             ctx.fillStyle = 'rgba(0,0,0,0.05)';
@@ -632,7 +688,14 @@
             }
         }
 
+        window.addEventListener('resize', resize);
+        state.matrixResize = resize;
         state.matrixAnim = setInterval(draw, 50);
+    }
+
+    function stopMatrix() {
+        if (state.matrixAnim) { clearInterval(state.matrixAnim); state.matrixAnim = null; }
+        if (state.matrixResize) { window.removeEventListener('resize', state.matrixResize); state.matrixResize = null; }
     }
 
     // ═══════════════════════════════════════
@@ -714,7 +777,7 @@
         if (state.mode !== 'terminal') return;
         state.idleTimer = setTimeout(function hint() {
             if (state.mode !== 'terminal') return;
-            termPrint(IDLE_HINTS[state.idleCount % IDLE_HINTS.length], 'system');
+            termPrint(IDLE_HINTS[state.idleCount % IDLE_HINTS.length].replace('{visitor}', state.visitorNumber), 'system');
             state.idleCount++;
             state.idleTimer = setTimeout(hint, 12000);
         }, 10000);
@@ -767,11 +830,13 @@
         setTimeout(function () { setFace('normal'); }, 6000);
 
         // Visual flash
-        document.body.style.transition = 'filter 0.2s';
-        document.body.style.filter = 'brightness(2) hue-rotate(90deg)';
-        setTimeout(function () {
-            document.body.style.filter = '';
-        }, 300);
+        if (!REDUCED_MOTION) {
+            document.body.style.transition = 'filter 0.2s';
+            document.body.style.filter = 'brightness(2) hue-rotate(90deg)';
+            setTimeout(function () {
+                document.body.style.filter = '';
+            }, 300);
+        }
     }
 
     // ═══════════════════════════════════════
@@ -805,12 +870,14 @@
             handleKonami(e);
         };
 
-        document.addEventListener('click', function () {
-            if (state.mode === 'bbs') {
-                var inp = $('#bbs-input');
-                if (inp) inp.focus();
-            }
-        });
+        document.addEventListener('click', focusBBSInput);
+    }
+
+    function focusBBSInput() {
+        if (state.mode === 'bbs') {
+            var inp = $('#bbs-input');
+            if (inp) inp.focus();
+        }
     }
 
     function bbsPrint(text, cls) {
@@ -1141,7 +1208,7 @@
         }
 
         state.currentSection = idx;
-        mainEl.scrollTo({ left: idx * mainEl.clientWidth, behavior: 'smooth' });
+        mainEl.scrollTo({ left: idx * mainEl.clientWidth, behavior: REDUCED_MOTION ? 'instant' : 'smooth' });
         updateLevelBar(idx);
         updateScrollDots(idx);
         updateNavHighlight(idx);
@@ -1288,7 +1355,7 @@
         // Nav bar
         html += '<div class="forum-nav">';
         html += '  <a class="active">Board Index</a>';
-        html += '  <a onclick="window.open(\'https://github.com/retroverse-studios\',\'_blank\')">GitHub</a>';
+        html += '  <a href="https://github.com/retroverse-studios" target="_blank" rel="noopener">GitHub</a>';
         html += '</div>';
 
         // Games category
@@ -1511,7 +1578,7 @@
     // ═══════════════════════════════════════
 
     function stopAnimations() {
-        if (state.matrixAnim) { clearInterval(state.matrixAnim); state.matrixAnim = null; }
+        stopMatrix();
         if (state.hackerAnim) { clearInterval(state.hackerAnim); state.hackerAnim = null; }
         if (state.statsAnim) { clearInterval(state.statsAnim); state.statsAnim = null; }
         if (state.autoScrollTimer) { clearInterval(state.autoScrollTimer); state.autoScrollTimer = null; }
@@ -1536,6 +1603,7 @@
 
         // Remove event listeners
         document.removeEventListener('click', focusTermInput);
+        document.removeEventListener('click', focusBBSInput);
         document.removeEventListener('keydown', handleRetroKeys);
 
         var mainEl = $('main');
@@ -1570,10 +1638,11 @@
         $('#reboot-btn').addEventListener('click', reboot);
     }
 
-    // Global konami listener for non-terminal/retro modes
+    // Global konami listener for modes whose own handlers don't cover it
     document.addEventListener('keydown', function (e) {
         if (state.mode === 'bbs') return; // handled in BBS input
         if (state.mode === 'terminal') return; // handled in term input
+        if (state.mode === 'retro') return; // handled in handleRetroKeys
         handleKonami(e);
     });
 

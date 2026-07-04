@@ -5,11 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetroVerse Studios | Where Classic Pixels Meet Next-Gen Choices</title>
     <meta name="description" content="Independent game studio from Perth, Australia. Fusing retro-pixel aesthetics with cutting-edge decision mechanics.">
+    <link rel="canonical" href="https://retroverse.studio/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://retroverse.studio/">
+    <meta property="og:title" content="RetroVerse Studios | Where Classic Pixels Meet Next-Gen Choices">
+    <meta property="og:description" content="Independent game studio from Perth, Australia. Fusing retro-pixel aesthetics with cutting-edge decision mechanics.">
+    <meta property="og:image" content="https://retroverse.studio/assets/images/retroversestudioslogo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="RetroVerse Studios | Where Classic Pixels Meet Next-Gen Choices">
+    <meta name="twitter:description" content="Independent game studio from Perth, Australia. Fusing retro-pixel aesthetics with cutting-edge decision mechanics.">
     <link rel="icon" href="assets/images/retroversestudioslogo.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <!-- Base styles + mode-specific styles loaded by JS -->
     <link rel="stylesheet" href="assets/css/base.css">
-    <link rel="stylesheet" id="mode-stylesheet" href="">
+    <link rel="stylesheet" id="mode-stylesheet">
+    <noscript>
+        <style>
+            /* Without JS the page stays in boot mode — reveal the plain content instead */
+            #boot-screen, .scanlines { display: none !important; }
+            [data-mode="boot"] #site-header,
+            [data-mode="boot"] main,
+            [data-mode="boot"] #site-footer { display: block !important; }
+            [data-mode="boot"] .section { padding: 48px 0; border-bottom: 2px solid var(--border); }
+            [data-mode="boot"] #site-header { padding: 24px 0; border-bottom: 2px solid var(--accent); }
+            [data-mode="boot"] .site-logo img { height: 40px; width: auto; vertical-align: middle; margin-right: 12px; }
+            [data-mode="boot"] .nav-list li { display: inline-block; margin-right: 16px; }
+            [data-mode="boot"] .nav-toggle { display: none; }
+            [data-mode="boot"] .card, [data-mode="boot"] .newsletter-box { border: 2px solid var(--border); padding: 24px; margin: 24px 0; background: var(--surface); }
+            [data-mode="boot"] .card-img, [data-mode="boot"] .about-img { display: none; }
+            [data-mode="boot"] .tag { display: inline-block; border: 1px solid var(--muted); padding: 2px 8px; margin: 4px 4px 0 0; font-size: 0.6rem; color: var(--muted); }
+            [data-mode="boot"] #site-footer { padding: 32px 0; color: var(--muted); }
+        </style>
+    </noscript>
 </head>
 <body>
     <!-- Scanlines overlay (all modes) -->
@@ -19,6 +46,7 @@
     <div id="boot-screen" aria-live="polite">
         <pre id="boot-text"></pre>
         <div id="boot-progress"><div id="boot-fill"></div></div>
+        <p id="boot-skip">PRESS ANY KEY TO SKIP</p>
     </div>
 
     <!-- Terminal/BBS output containers (exist alongside main, toggled by CSS) -->
