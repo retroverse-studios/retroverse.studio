@@ -1669,6 +1669,33 @@
         $('#reboot-btn').addEventListener('click', reboot);
     }
 
+    // Game shelf cards hide their CTA behind a hover popup in retro mode,
+    // which makes the link hard (touch: impossible) to reach — so the whole
+    // card opens the game's site
+    function initCardLinks() {
+        document.querySelectorAll('.card[data-game]').forEach(function (card) {
+            var game = null;
+            GAMES.forEach(function (g) { if (g.id === card.dataset.game) game = g; });
+            if (!game || !game.url) return;
+
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'link');
+            card.setAttribute('aria-label', 'Open ' + game.name + ' website');
+
+            function openGame(e) {
+                if (e.target.closest && e.target.closest('a')) return; // real links still work
+                window.open(game.url, '_blank', 'noopener');
+            }
+            card.addEventListener('click', openGame);
+            card.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openGame(e);
+                }
+            });
+        });
+    }
+
     // Global konami listener for modes whose own handlers don't cover it
     document.addEventListener('keydown', function (e) {
         if (state.mode === 'bbs') return; // handled in BBS input
@@ -1682,6 +1709,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         initVisitorCounter();
         initModeSwitcher();
+        initCardLinks();
         boot();
     });
 

@@ -373,7 +373,12 @@ main::-webkit-scrollbar { display: none; }
     align-self: flex-start;
     font-size: 0.45rem;
     padding: 6px 12px;
+    /* surface the link right under the title so it isn't lost below the scroll fold */
+    order: -1;
 }
+
+.shelf .card:hover .card-body .badge { order: -3; }
+.shelf .card:hover .card-body h3 { order: -2; }
 
 .shelf .card:hover .card-body p {
     font-size: 0.45rem;
