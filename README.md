@@ -21,7 +21,10 @@ A boot sequence picks a mode at random on every load (press any key to skip). Us
 - `assets/css/base.css` — shared variables, boot screen, mode switcher, reduced-motion support
 - `assets/css/{terminal,bbs,retro,forum}.css` — one stylesheet per mode, loaded on demand
 - `assets/js/app.js` — boot sequence, mode engine, terminal commands, BBS menus, side-scroller, forum renderer, easter eggs
-- `api/process-email.php` — legacy newsletter endpoint; **not functional on GitHub Pages** (requires a PHP host or replacement with a form service)
+
+## Newsletter
+
+Currently disabled — there's no mailing list yet. The signup UI is preserved but hidden. To bring it back: set `NEWSLETTER_ENABLED = true` in `assets/js/app.js`, uncomment the newsletter section and nav link in `index.html`, and point the form at a real endpoint (GitHub Pages can't run server code, so use a service like Buttondown or Formspree, or a Cloudflare Worker — optionally paired with Resend for sending).
 
 ## Easter eggs
 

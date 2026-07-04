@@ -10,6 +10,10 @@
 
     var REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // No mailing list yet — flip to true (and re-enable the section + nav link
+    // in index.html, pointing the form at a real endpoint) to bring it back
+    var NEWSLETTER_ENABLED = false;
+
     // ═══ STATE ═══
     var state = {
         mode: 'boot',
@@ -52,6 +56,10 @@
         { id: 'newsletter', world: '2-1', name: 'NEWSLETTER' }
     ];
 
+    if (!NEWSLETTER_ENABLED) {
+        SECTIONS = SECTIONS.filter(function (s) { return s.id !== 'newsletter'; });
+    }
+
     var IDLE_HINTS = [
         '[SYSTEM] Try typing "help" for available commands.',
         '[SYSTEM] Type "games" to see our game catalog.',
@@ -68,6 +76,10 @@
         '[SYSTEM] Try the Konami code... up up down down left right left right b a',
         '[SYSTEM] You are visitor #{visitor} to this reality.'
     ];
+
+    if (!NEWSLETTER_ENABLED) {
+        IDLE_HINTS = IDLE_HINTS.filter(function (h) { return h.indexOf('subscribe') === -1; });
+    }
 
     var HACKER_LINES = [
         '[OK] Establishing secure connection...',
@@ -429,7 +441,7 @@
                 termPrint('  play <1-4>    View game details');
                 termPrint('  tools         List development tools');
                 termPrint('  about         About the studio');
-                termPrint('  subscribe     Newsletter signup');
+                if (NEWSLETTER_ENABLED) termPrint('  subscribe     Newsletter signup');
                 termPrint('  open <1-6>    Open game/tool link');
                 termPrint('  clear         Clear terminal');
                 termPrint('  panels        Toggle side panels');
@@ -523,6 +535,12 @@
                 break;
 
             case 'subscribe': case 'newsletter':
+                if (!NEWSLETTER_ENABLED) {
+                    termPrint('');
+                    termPrint('No newsletter just yet — maybe in a future reality.', 'muted');
+                    termPrint('Follow along instead: github.com/retroverse-studios', 'secondary');
+                    break;
+                }
                 explore('newsletter');
                 termPrint('');
                 termPrint('═══ NEWSLETTER ---', 'accent');
@@ -762,7 +780,8 @@
         var expEl = $('#hud-explored');
         var powEl = $('#hud-power');
         if (xpEl) xpEl.textContent = String(state.xp).padStart(3, '0');
-        if (expEl) expEl.style.width = Math.min(100, Math.round((state.explored.size / 7) * 100)) + '%';
+        var explorable = NEWSLETTER_ENABLED ? 7 : 6; // help, games, tools, about, easter, konami (+newsletter)
+        if (expEl) expEl.style.width = Math.min(100, Math.round((state.explored.size / explorable) * 100)) + '%';
         if (powEl) powEl.style.width = Math.min(100, 50 + state.xp * 2) + '%';
     }
 
@@ -924,7 +943,7 @@
                 bbsPrint('  [G]  Game Catalog', 'white');
                 bbsPrint('  [T]  Tools & Apps', 'white');
                 bbsPrint('  [A]  About the SysOp', 'white');
-                bbsPrint('  [N]  Newsletter Signup', 'white');
+                if (NEWSLETTER_ENABLED) bbsPrint('  [N]  Newsletter Signup', 'white');
                 bbsPrint('  [M]  Switch Display Mode', 'white');
                 bbsPrint('  [R]  Reboot System', 'white');
                 bbsPrint('');
@@ -1022,10 +1041,13 @@
                 case 'g': showBBSPage('games'); break;
                 case 't': showBBSPage('tools'); break;
                 case 'a': showBBSPage('about'); break;
-                case 'n': showBBSPage('newsletter'); break;
+                case 'n':
+                    if (NEWSLETTER_ENABLED) showBBSPage('newsletter');
+                    else bbsPrint('  No newsletter on this node yet. Check back later!', 'yellow');
+                    break;
                 case 'm': showBBSPage('mode'); break;
                 case 'r': reboot(); break;
-                default: bbsPrint('  Unknown selection. Try G, T, A, N, M, or R.', 'red');
+                default: bbsPrint('  Unknown selection. Try G, T, A, ' + (NEWSLETTER_ENABLED ? 'N, ' : '') + 'M, or R.', 'red');
             }
         } else if (bbsPage === 'mode') {
             switch (val) {
@@ -1146,7 +1168,7 @@
 
         // Newsletter form
         var form = $('#newsletter-form');
-        if (form) {
+        if (form && NEWSLETTER_ENABLED) {
             form.onsubmit = function (e) {
                 e.preventDefault();
                 var email = form.querySelector('input[type="email"]').value.trim();
@@ -1399,7 +1421,7 @@
         }));
 
         // About (as a sticky meta thread)
-        html += renderCategory('Meta', [{
+        var metaThreads = [{
             id: 'about',
             title: 'About RetroVerse Studios',
             sticky: true,
@@ -1411,25 +1433,29 @@
             lastDate: 'Mar 2026',
             aboutThread: true,
             replyData: []
-        }, {
-            id: 'newsletter',
-            title: 'Subscribe to Updates',
-            sticky: true,
-            author: 'SysOp',
-            preview: 'Dev updates, pixel art reveals, and early access...',
-            replies: 0,
-            views: Math.floor((state.visitorNumber - 41999) * 0.4),
-            lastAuthor: 'SysOp',
-            lastDate: 'Mar 2026',
-            newsletterThread: true,
-            replyData: []
-        }]);
+        }];
+        if (NEWSLETTER_ENABLED) {
+            metaThreads.push({
+                id: 'newsletter',
+                title: 'Subscribe to Updates',
+                sticky: true,
+                author: 'SysOp',
+                preview: 'Dev updates, pixel art reveals, and early access...',
+                replies: 0,
+                views: Math.floor((state.visitorNumber - 41999) * 0.4),
+                lastAuthor: 'SysOp',
+                lastDate: 'Mar 2026',
+                newsletterThread: true,
+                replyData: []
+            });
+        }
+        html += renderCategory('Meta', metaThreads);
 
         // Board stats
         var totalReplies = 0;
         Object.keys(FORUM_REPLIES).forEach(function (k) { totalReplies += FORUM_REPLIES[k].length; });
         html += '<div class="forum-stats">';
-        html += '  <strong>' + (GAMES.length + TOOLS.length + 2) + '</strong> threads | ';
+        html += '  <strong>' + (GAMES.length + TOOLS.length + metaThreads.length) + '</strong> threads | ';
         html += '  <strong>' + totalReplies + '</strong> replies | ';
         html += '  <strong>1</strong> user online | ';
         html += '  Newest member: <strong>visitor</strong><br>';
