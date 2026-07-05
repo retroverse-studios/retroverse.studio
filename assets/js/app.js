@@ -46,7 +46,8 @@
     var TOOLS = [
         { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Electron, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
         { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://visualcataloguer.retroverse.studio' },
-        { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' }
+        { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' },
+        { id: 'numeron', name: 'NUMERON', desc: 'Numerology exploration tool in a phosphor-CRT terminal aesthetic. Five traditions compared — disagreements included — with the Barnum effect explained by name.', tech: 'Web, Desktop (Win/macOS/Linux)', url: 'https://numeron.retroverse.studio' }
     ];
 
     var SECTIONS = [
@@ -443,7 +444,7 @@
                 termPrint('  tools         List development tools');
                 termPrint('  about         About the studio');
                 if (NEWSLETTER_ENABLED) termPrint('  subscribe     Newsletter signup');
-                termPrint('  open <1-7>    Open game/tool link');
+                termPrint('  open <1-8>    Open game/tool link');
                 termPrint('  clear         Clear terminal');
                 termPrint('  panels        Toggle side panels');
                 termPrint('  matrix        Toggle matrix rain');
@@ -937,7 +938,8 @@
                 bbsPrint('');
                 bbsPrint('  Welcome to the RetroVerse BBS!');
                 bbsPrint('  All games are open source and free.');
-                bbsPrint('  New: Incident Zero now has 171 cards!');
+                bbsPrint('  New: NUMERON — five numerology systems,');
+                bbsPrint('  zero predictions. Press T to check it out.');
                 bbsPrint('');
                 bbsPrint('----------------------------------------', 'cyan');
                 bbsPrint('');
@@ -1346,6 +1348,10 @@
         'virtual-lanes': [
             { user: 5, text: 'Been journalling my league nights for a month. The simulated rivals are weirdly motivating.', date: 'Jun 21, 2026' },
             { user: 2, text: 'Installed as a PWA, works perfectly offline at the alley. No signal, no problem.', date: 'Jun 28, 2026' }
+        ],
+        'numeron': [
+            { user: 7, text: 'A numerology app that opens by telling you numerology has no predictive validity? Respect. The three-lens readings are a nice touch.', date: 'Jul 02, 2026' },
+            { user: 3, text: 'Ran my name through all five systems and got five different numbers. Which is kind of the point, I guess. Decode mode is addictive.', date: 'Jul 04, 2026' }
         ]
     };
 
