@@ -47,7 +47,8 @@
         { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Electron, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
         { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://visualcataloguer.retroverse.studio' },
         { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' },
-        { id: 'numeron', name: 'NUMERON', desc: 'Numerology exploration tool in a phosphor-CRT terminal aesthetic. Five traditions compared — disagreements included — with the Barnum effect explained by name.', tech: 'Web, Desktop (Win/macOS/Linux)', url: 'https://numeron.retroverse.studio' }
+        { id: 'numeron', name: 'NUMERON', desc: 'Numerology exploration tool in a phosphor-CRT terminal aesthetic. Five traditions compared — disagreements included — with the Barnum effect explained by name.', tech: 'Web, Desktop (Win/macOS/Linux)', url: 'https://numeron.retroverse.studio' },
+        { id: 'astron', name: 'ASTRON', desc: 'Astrology chart engine running the real Swiss Ephemeris in your browser. Natal charts, transits, synastry — tropical and sidereal side by side. The maths is real; the meaning belongs to the tradition.', tech: 'Web, Desktop (Win/macOS/Linux), CLI', url: 'https://astron.retroverse.studio' }
     ];
 
     var SECTIONS = [
@@ -444,7 +445,7 @@
                 termPrint('  tools         List development tools');
                 termPrint('  about         About the studio');
                 if (NEWSLETTER_ENABLED) termPrint('  subscribe     Newsletter signup');
-                termPrint('  open <1-8>    Open game/tool link');
+                termPrint('  open <1-9>    Open game/tool link');
                 termPrint('  clear         Clear terminal');
                 termPrint('  panels        Toggle side panels');
                 termPrint('  matrix        Toggle matrix rain');
@@ -938,8 +939,9 @@
                 bbsPrint('');
                 bbsPrint('  Welcome to the RetroVerse BBS!');
                 bbsPrint('  All games are open source and free.');
-                bbsPrint('  New: NUMERON — five numerology systems,');
-                bbsPrint('  zero predictions. Press T to check it out.');
+                bbsPrint('  New: ASTRON — the Swiss Ephemeris in your');
+                bbsPrint('  browser. Real astronomy, honest tradition.');
+                bbsPrint('  Press T to check it out.');
                 bbsPrint('');
                 bbsPrint('----------------------------------------', 'cyan');
                 bbsPrint('');
@@ -1352,6 +1354,10 @@
         'numeron': [
             { user: 7, text: 'A numerology app that opens by telling you numerology has no predictive validity? Respect. The three-lens readings are a nice touch.', date: 'Jul 02, 2026' },
             { user: 3, text: 'Ran my name through all five systems and got five different numbers. Which is kind of the point, I guess. Decode mode is addictive.', date: 'Jul 04, 2026' }
+        ],
+        'astron': [
+            { user: 4, text: 'The whole Swiss Ephemeris running client-side in WASM. My birth data never leaves the browser. This is how astrology software should be built.', date: 'Jul 12, 2026' },
+            { user: 1, text: 'Tropical and sidereal side by side with the ayanamsa labelled, retrogrades flagged, applying vs separating aspects. The synastry bouquet is a lovely touch — thorns and all.', date: 'Jul 13, 2026' }
         ]
     };
 
