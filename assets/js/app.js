@@ -37,14 +37,14 @@
 
     // ═══ CONTENT DATA ═══
     var GAMES = [
-        { id: 'swipeverse', name: 'SwipeVerse', status: 'FLAGSHIP', desc: 'Card-based survival strategy game powered by AI-generated narratives. Swipe to shape the fate of entire realities.', platforms: 'Web, Android, Windows, macOS', url: 'https://swipeverse.app', features: ['Swipe-based decisions', 'AI-generated storylines', 'Create your own realities', 'Works offline (PWA)'] },
+        { id: 'swipeverse', name: 'SwipeVerse', status: 'FLAGSHIP', desc: 'Card-based survival strategy game powered by AI-generated narratives. Swipe to shape the fate of entire realities.', platforms: 'Web (PWA — installable, works offline)', url: 'https://swipeverse.app', features: ['Swipe-based decisions', 'AI-generated storylines', 'Create your own realities', 'Works offline (PWA)'] },
         { id: 'stellas-evolution', name: "Stella's Evolution", status: 'GAME 1 OUT NOW', desc: 'Four-game puzzle-platformer series for real Atari 2600 hardware. From a bare 4K cartridge to an ARM coprocessor.', platforms: 'Atari 2600, Emulator', url: 'https://stellasevolution.retroverse.studio', features: ['Four games, one console', 'Real 2600 hardware', 'Game 1: Stella Was Alone (RC)'] },
         { id: 'glomph-maze', name: 'Glomph Maze', status: 'ACTIVE', desc: 'Text-based Pac-Man clone for the terminal. Navigate mazes, collect dots, avoid ghosts. Revived from a 1998 classic.', platforms: 'Linux, macOS, Windows', url: 'https://github.com/retroverse-studios/glomph-maze', features: ['Ghost AI', 'Custom mazes', 'Terminal-native'] },
-        { id: 'incident-zero', name: 'Incident Zero', status: 'TABLETOP+DIGITAL', desc: 'Cooperative cybersecurity strategy game. One attacks, the rest defend. Powered by the MITRE ATT&CK framework.', platforms: 'Multiplayer, Tabletop, Web', url: 'https://incidentzero.retroverse.studio', features: ['2-7 players', 'AI threat scenarios', '6 modules', '171 cards'] }
+        { id: 'incident-zero', name: 'Incident Zero', status: 'TABLETOP+DIGITAL', desc: 'Cooperative cybersecurity strategy game. One attacks, the rest defend. Powered by the MITRE ATT&CK framework.', platforms: 'Co-op tabletop (print & play), Web', url: 'https://incidentzero.retroverse.studio', features: ['2-7 players', 'MITRE ATT&CK scenarios', '6 modules', '171 cards'] }
     ];
 
     var TOOLS = [
-        { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Electron, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
+        { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Tauri, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
         { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://visualcataloguer.retroverse.studio' },
         { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' },
         { id: 'numeron', name: 'NUMERON', desc: 'Numerology exploration tool in a phosphor-CRT terminal aesthetic. Five traditions compared — disagreements included — with the Barnum effect explained by name.', tech: 'Web, Desktop (Win/macOS/Linux)', url: 'https://numeron.retroverse.studio' },
@@ -141,18 +141,29 @@
         dead:  ' X_X '
     };
 
+    // Storage can throw (blocked cookies/private mode) — never let it kill boot
+    function storageGet(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function storageSet(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) { /* session-only then */ }
+    }
+
     // ═══ DOM REFS ═══
     var $ = function (sel) { return document.querySelector(sel); };
 
     // ═══ VISITOR COUNTER ═══
     function initVisitorCounter() {
-        var count = parseInt(localStorage.getItem('rv_visits') || '0', 10) + 1;
-        localStorage.setItem('rv_visits', count.toString());
+        var count = parseInt(storageGet('rv_visits') || '0', 10) + 1;
+        if (isNaN(count)) count = 1;
+        storageSet('rv_visits', count.toString());
         state.visitorNumber = 41999 + count; // start from a fun number
+        state.xp = parseInt(storageGet('rv_xp') || '0', 10) || 0;
     }
 
     // ═══ BOOT SEQUENCE ═══
-    function boot() {
+    var FULL_BOOT_GAP_MS = 24 * 60 * 60 * 1000; // full boot at most once a day
+    function boot(forceFull) {
         var bootEl = $('#boot-text');
         var fillEl = $('#boot-fill');
         var modes = ['terminal', 'bbs', 'retro', 'forum'];
@@ -182,6 +193,9 @@
             ];
             glitchLine = glitches[Math.floor(Math.random() * glitches.length)];
         }
+
+        var lastFullBoot = parseInt(storageGet('rv_last_full_boot') || '0', 10) || 0;
+        var quickBoot = !forceFull && !REDUCED_MOTION && (Date.now() - lastFullBoot < FULL_BOOT_GAP_MS);
 
         var lines = [
             'RETROVERSE BIOS v1.0',
@@ -223,6 +237,7 @@
         function finishBoot() {
             if (finished) return;
             finished = true;
+            if (!quickBoot) storageSet('rv_last_full_boot', String(Date.now()));
             removeSkipListeners();
             fillEl.style.width = '100%';
             setTimeout(function () {
@@ -270,6 +285,19 @@
             bootTimer = setTimeout(nextLine, delay);
         }
 
+        if (quickBoot) {
+            // Same-day return: three-line fast boot. The reboot button (⏻)
+            // always replays the full sequence when you want the show.
+            lines = [
+                'RETROVERSE BIOS v1.0 — warm boot',
+                'Visitor #' + state.visitorNumber + ' (welcome back)',
+                'Reality selected: ' + chosenMode.toUpperCase()
+            ];
+            bootEl.textContent = lines.join('\n');
+            bootTimer = setTimeout(finishBoot, REDUCED_MOTION ? 50 : 600);
+            return;
+        }
+
         document.addEventListener('keydown', skipBoot);
         document.addEventListener('pointerdown', skipBoot);
         bootTimer = setTimeout(nextLine, 500);
@@ -294,8 +322,8 @@
         document.documentElement.setAttribute('data-mode', 'boot');
         $('#mode-switcher').classList.remove('visible');
 
-        // Run boot again
-        setTimeout(boot, 300);
+        // Run boot again — reboot always replays the full sequence
+        setTimeout(function () { boot(true); }, 300);
     }
 
     // ═══ MODE SWITCHING ═══
@@ -373,11 +401,12 @@
         updateHUD();
     }
 
-    function focusTermInput() {
-        if (state.mode === 'terminal') {
-            var input = $('#term-input');
-            if (input) input.focus();
-        }
+    function focusTermInput(e) {
+        if (state.mode !== 'terminal') return;
+        if (window.getSelection && String(window.getSelection())) return; // let them copy
+        if (e && e.target && e.target.closest && e.target.closest('button, a, input, select, textarea')) return;
+        var input = $('#term-input');
+        if (input) input.focus();
     }
 
     function handleTermKey(e) {
@@ -634,7 +663,7 @@
 
             case 'visitors': case 'counter':
                 termPrint('You are visitor #' + state.visitorNumber + ' to this reality.', 'accent');
-                termPrint('Total visits from this browser: ' + (localStorage.getItem('rv_visits') || '1'), 'muted');
+                termPrint('Total visits from this browser: ' + (storageGet('rv_visits') || '1'), 'muted');
                 break;
 
             case 'sudo':
@@ -774,7 +803,7 @@
         if (el) el.textContent = DOOM_FACES[mood] || DOOM_FACES.normal;
     }
 
-    function addXP(n) { state.xp += n; updateHUD(); }
+    function addXP(n) { state.xp += n; storageSet('rv_xp', String(state.xp)); updateHUD(); }
 
     function explore(section) { state.explored.add(section); updateHUD(); }
 
@@ -1139,10 +1168,12 @@
         // Keyboard arrows
         document.addEventListener('keydown', handleRetroKeys);
 
-        // Mobile nav
+        // Mobile nav (wire once — initRetro runs on every entry to retro mode;
+        // re-adding the link handlers stacked duplicate scrolls per click)
         var toggle = $('.nav-toggle');
         var navList = $('.nav-list');
-        if (toggle && navList) {
+        if (toggle && navList && !state.retroNavWired) {
+            state.retroNavWired = true;
             toggle.onclick = function () { navList.classList.toggle('active'); };
             navList.querySelectorAll('a').forEach(function (a) {
                 a.addEventListener('click', function (e) {
@@ -1319,7 +1350,7 @@
             { user: 2, text: 'Works great offline on my commute. The PWA support is solid.', date: 'Mar 16, 2026' },
             { user: 3, text: 'Anyone tried creating a custom universe yet? The editor is deep.', date: 'Mar 17, 2026' },
             { user: 4, text: 'Cyberpunk dystopia is my favourite reality so far. The moral dilemmas are intense.', date: 'Mar 18, 2026' },
-            { user: 5, text: 'Downloaded on Android, runs smooth. Swipe controls feel natural.', date: 'Mar 19, 2026' }
+            { user: 5, text: 'Installed it as a PWA on my phone, runs smooth. Swipe controls feel natural.', date: 'Mar 19, 2026' }
         ],
         'stellas-evolution': [
             { user: 6, text: 'As an Atari collector, I cannot wait for this. The concept is brilliant.', date: 'Mar 12, 2026' },
@@ -1484,6 +1515,9 @@
 
         // Wire up thread clicks
         forumOutput.querySelectorAll('.forum-thread').forEach(function (el) {
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+            });
             el.addEventListener('click', function () {
                 var threadId = el.dataset.threadId;
                 var body = forumOutput.querySelector('.forum-thread-body[data-thread-id="' + threadId + '"]');
@@ -1491,11 +1525,12 @@
                     var isVisible = body.classList.contains('visible');
                     // Collapse all
                     forumOutput.querySelectorAll('.forum-thread-body').forEach(function (b) { b.classList.remove('visible'); });
-                    forumOutput.querySelectorAll('.forum-thread').forEach(function (t) { t.classList.remove('expanded'); });
+                    forumOutput.querySelectorAll('.forum-thread').forEach(function (t) { t.classList.remove('expanded'); t.setAttribute('aria-expanded', 'false'); });
                     // Toggle this one
                     if (!isVisible) {
                         body.classList.add('visible');
                         el.classList.add('expanded');
+                        el.setAttribute('aria-expanded', 'true');
                         setTimeout(function () { body.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
                     }
                 }
@@ -1514,7 +1549,7 @@
 
         threads.forEach(function (t) {
             // Thread row
-            html += '<div class="forum-thread' + (t.sticky ? ' forum-sticky' : '') + '" data-thread-id="' + t.id + '">';
+            html += '<div class="forum-thread' + (t.sticky ? ' forum-sticky' : '') + '" data-thread-id="' + t.id + '" tabindex="0" role="button" aria-expanded="false">';
             html += '  <div class="forum-thread-info">';
             html += '    <div class="forum-thread-title">';
             html += '      <span class="thread-icon">' + (t.sticky ? '[*]' : '[ ]') + '</span>';
@@ -1716,10 +1751,12 @@
         handleKonami(e);
     });
 
-    window._bootTime = Date.now();
-
     document.addEventListener('DOMContentLoaded', function () {
         initVisitorCounter();
+        var hudGames = $('#hud-games');
+        if (hudGames) hudGames.textContent = String(GAMES.length);
+        var statGames = $('#stat-games');
+        if (statGames) statGames.textContent = String(GAMES.length);
         initModeSwitcher();
         initCardLinks();
         boot();

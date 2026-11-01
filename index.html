@@ -15,7 +15,12 @@
     <meta name="twitter:title" content="RetroVerse Studios | Where Classic Pixels Meet Next-Gen Choices">
     <meta name="twitter:description" content="Independent game studio from Perth, Australia. Fusing retro-pixel aesthetics with cutting-edge decision mechanics.">
     <link rel="icon" href="assets/images/retroversestudioslogo.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Press Start 2P is self-hosted (see @font-face in base.css): no third-party requests -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'">
+    <link rel="preload" as="style" href="assets/css/terminal.css">
+    <link rel="preload" as="style" href="assets/css/bbs.css">
+    <link rel="preload" as="style" href="assets/css/retro.css">
+    <link rel="preload" as="style" href="assets/css/forum.css">
     <!-- Base styles + mode-specific styles loaded by JS -->
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" id="mode-stylesheet">
@@ -43,16 +48,18 @@
     <div class="scanlines" aria-hidden="true"></div>
 
     <!-- Boot screen (shown before mode loads) -->
-    <div id="boot-screen" aria-live="polite">
+    <div id="boot-screen" aria-hidden="true">
         <pre id="boot-text"></pre>
         <div id="boot-progress"><div id="boot-fill"></div></div>
         <p id="boot-skip">PRESS ANY KEY TO SKIP</p>
     </div>
 
+    <p class="sr-only" role="status">Loading RetroVerse Studios. This site randomly loads one of four display modes; use the mode switcher at the bottom right to change it.</p>
+
     <!-- Terminal/BBS output containers (exist alongside main, toggled by CSS) -->
     <div id="term-output" aria-live="polite"></div>
     <div id="bbs-output" aria-live="polite"></div>
-    <div id="forum-output" aria-live="polite"></div>
+    <div id="forum-output"></div>
 
     <!-- Canvas layers for terminal effects (hidden in other modes) -->
     <canvas id="matrix-canvas" aria-hidden="true"></canvas>
@@ -74,7 +81,7 @@
     <header id="site-header">
         <div class="wrap">
             <a href="#" class="site-logo">
-                <img src="assets/images/retroversestudioslogo.png" alt="RetroVerse Studios">
+                <img src="assets/images/retroversestudioslogo.png" alt="RetroVerse Studios" width="36" height="36">
                 <span class="site-title">RetroVerse Studios</span>
             </a>
             <nav>
@@ -101,7 +108,7 @@
                 <h1 class="glitch" data-text="RetroVerse Studios">RetroVerse Studios</h1>
                 <p class="hero-tagline">Where Classic Pixels Meet Next-Gen Choices</p>
                 <div class="hero-stats">
-                    <div class="stat"><span class="stat-val">4</span><span class="stat-lbl">Games</span></div>
+                    <div class="stat"><span class="stat-val" id="stat-games">4</span><span class="stat-lbl">Games</span></div>
                     <div class="stat"><span class="stat-val">3</span><span class="stat-lbl">Platforms</span></div>
                     <div class="stat"><span class="stat-val">&infin;</span><span class="stat-lbl">Realities</span></div>
                 </div>
@@ -119,7 +126,7 @@
 
                 <div class="shelf">
                     <article class="card card--featured" data-game="swipeverse">
-                        <div class="card-img" style="background-image:url('assets/images/games/game1.png')"></div>
+                        <div class="card-img" style="background-image:url('assets/images/games/game1.webp')"></div>
                         <div class="card-body">
                             <span class="badge badge--green">Flagship Title</span>
                             <h3>SwipeVerse</h3>
@@ -132,9 +139,8 @@
                             </ul>
                             <div class="tags">
                                 <span class="tag">Web</span>
-                                <span class="tag">Android</span>
-                                <span class="tag">Windows</span>
-                                <span class="tag">macOS</span>
+                                <span class="tag">PWA</span>
+                                <span class="tag">Offline</span>
                             </div>
                             <a href="https://swipeverse.app" class="cta" target="_blank" rel="noopener">Play Now</a>
                         </div>
@@ -143,7 +149,7 @@
                     <div class="deco" data-deco="plant"></div>
 
                     <article class="card" data-game="stellas-evolution">
-                        <div class="card-img" style="background-image:url('assets/images/games/game2.png')"></div>
+                        <div class="card-img" style="background-image:url('assets/images/games/game2.webp')"></div>
                         <div class="card-body">
                             <span class="badge badge--green">Game 1 Out Now</span>
                             <h3>Stella's Evolution</h3>
@@ -185,16 +191,16 @@
                         <div class="card-body">
                             <span class="badge badge--yellow">Tabletop + Digital</span>
                             <h3>Incident Zero</h3>
-                            <p>A cooperative cybersecurity strategy game. One player attacks, the rest defend. Navigate real-world threat scenarios powered by the MITRE ATT&amp;CK framework &mdash; as a printable tabletop game or online with AI-generated attack chains.</p>
+                            <p>A cooperative cybersecurity strategy game. One player attacks, the rest defend. Navigate real-world threat scenarios powered by the MITRE ATT&amp;CK framework &mdash; a free print-and-play tabletop game with full rules and print packs online.</p>
                             <ul class="features features--inline">
                                 <li>2&ndash;7 players</li>
-                                <li>AI threat scenarios</li>
+                                <li>MITRE ATT&amp;CK scenarios</li>
                                 <li>6 modules</li>
                                 <li>171 cards</li>
                             </ul>
                             <div class="tags">
-                                <span class="tag">Multiplayer</span>
-                                <span class="tag">Tabletop</span>
+                                <span class="tag">Co-op Tabletop</span>
+                                <span class="tag">Print &amp; Play</span>
                                 <span class="tag">Web</span>
                             </div>
                             <a href="https://incidentzero.retroverse.studio" class="cta" target="_blank" rel="noopener">Visit Site</a>
@@ -224,7 +230,7 @@
                             <h3>Karaoke Stage</h3>
                             <p>A themed karaoke player supporting CDG+MP3 and LRC formats. Organise songs by occasion, create custom categories, and bulk-import entire collections. Runs in your browser &mdash; no server required.</p>
                             <div class="tags">
-                                <span class="tag">Electron</span>
+                                <span class="tag">Tauri</span>
                                 <span class="tag">React</span>
                                 <span class="tag">TypeScript</span>
                             </div>
@@ -287,7 +293,7 @@
         <section id="about" class="section" data-section="about">
             <div class="wrap">
                 <div class="about-layout">
-                    <div class="card-img about-img" style="background-image:url('assets/images/about/about-bg.png')"></div>
+                    <div class="card-img about-img" style="background-image:url('assets/images/about/about-bg.webp')"></div>
                     <div class="about-text">
                         <h2>About the Studio</h2>
                         <p>RetroVerse Studios is an independent game studio based in Perth, Australia. We fuse retro-pixel aesthetics with cutting-edge decision algorithms &mdash; reigniting the charm of classic games while innovating with AI-driven mechanics.</p>
@@ -368,11 +374,11 @@
 
     <!-- Mode switcher + reboot -->
     <div id="mode-switcher" role="navigation" aria-label="Display mode">
-        <button class="mode-btn" data-mode="terminal" title="Terminal">&gt;_</button>
-        <button class="mode-btn" data-mode="bbs" title="BBS">BBS</button>
-        <button class="mode-btn" data-mode="retro" title="8-Bit">8bit</button>
-        <button class="mode-btn" data-mode="forum" title="Forum">FRM</button>
-        <button class="mode-btn mode-btn--reboot" id="reboot-btn" title="Reboot (randomise mode)">&#9211;</button>
+        <button class="mode-btn" data-mode="terminal" title="Terminal" aria-label="Terminal mode">&gt;_</button>
+        <button class="mode-btn" data-mode="bbs" title="BBS" aria-label="BBS mode">BBS</button>
+        <button class="mode-btn" data-mode="retro" title="8-Bit" aria-label="8-bit mode">8bit</button>
+        <button class="mode-btn" data-mode="forum" title="Forum" aria-label="Forum mode">FRM</button>
+        <button class="mode-btn mode-btn--reboot" id="reboot-btn" title="Reboot (randomise mode, full boot sequence)" aria-label="Reboot into a random mode">&#9211;</button>
     </div>
 
     <script src="assets/js/app.js"></script>

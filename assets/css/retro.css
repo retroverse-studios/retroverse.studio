@@ -109,7 +109,7 @@ main::-webkit-scrollbar { display: none; }
 
 /* Section backgrounds — alternating for visual rhythm */
 #hero {
-    background: url('../images/hero-bg.png') center/cover;
+    background: url('../images/hero-bg.webp') center/cover;
     align-items: center;
     justify-content: center;
     text-align: center;
