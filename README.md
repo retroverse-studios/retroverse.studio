@@ -35,7 +35,7 @@ Currently disabled — there's no mailing list yet. The signup UI is preserved b
 
 ## Credits
 
-- Font: Press Start 2P (Google Fonts)
+- Font: Press Start 2P, self-hosted (SIL OFL)
 
 ## License
 
