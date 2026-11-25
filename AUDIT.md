@@ -33,6 +33,10 @@ persist XP (one `localStorage` key, matching the README) or fix the README.
 ## Medium
 
 ### M1. Content is duplicated in HTML and JS arrays — and already drifting
+**Fixed.** The cards in `index.html` are now the only copy. `app.js` builds
+`GAMES` and `TOOLS` from them at load (`readCards`), so the terminal, BBS and
+forum views show whatever the cards say. The original finding follows.
+
 Games/tools exist as HTML cards (retro/forum/no-JS views) **and** as
 `GAMES`/`TOOLS` JS data (terminal/BBS/forum renderers). Every product
 update must be made twice (the ASTRON/NUMERON commits did), and details

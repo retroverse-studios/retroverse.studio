@@ -22,6 +22,8 @@ A boot sequence picks a mode at random on every load (press any key to skip). Us
 - `assets/css/{terminal,bbs,retro,forum}.css` — one stylesheet per mode, loaded on demand
 - `assets/js/app.js` — boot sequence, mode engine, terminal commands, BBS menus, side-scroller, forum renderer, easter eggs
 
+To add or change a game or tool, edit its `<article class="card">` in `index.html` only. The terminal, BBS and forum views read the name, badge, description, feature list, tags and link from that card.
+
 ## Newsletter
 
 Currently disabled — there's no mailing list yet. The signup UI is preserved but hidden. To bring it back: set `NEWSLETTER_ENABLED = true` in `assets/js/app.js`, uncomment the newsletter section and nav link in `index.html`, and point the form at a real endpoint (GitHub Pages can't run server code, so use a service like Buttondown or Formspree, or a Cloudflare Worker — optionally paired with Resend for sending).

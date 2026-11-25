@@ -36,21 +36,33 @@
     };
 
     // ═══ CONTENT DATA ═══
-    var GAMES = [
-        { id: 'swipeverse', name: 'SwipeVerse', status: 'FLAGSHIP', desc: 'Card-based survival strategy game powered by AI-generated narratives. Swipe to shape the fate of entire realities.', platforms: 'Web (PWA — installable, works offline)', url: 'https://swipeverse.app', features: ['Swipe-based decisions', 'AI-generated storylines', 'Create your own realities', 'Works offline (PWA)'] },
-        { id: 'stellas-evolution', name: "Stella's Evolution", status: 'GAME 1 OUT NOW', desc: 'Four-game puzzle-platformer series for real Atari 2600 hardware. From a bare 4K cartridge to an ARM coprocessor.', platforms: 'Atari 2600, Emulator', url: 'https://stellasevolution.retroverse.studio', features: ['Four games, one console', 'Real 2600 hardware', 'Game 1: Stella Was Alone (RC)'] },
-        { id: 'glomph-maze', name: 'Glomph Maze', status: 'ACTIVE', desc: 'Text-based Pac-Man clone for the terminal. Navigate mazes, collect dots, avoid ghosts. Revived from a 1998 classic.', platforms: 'Linux, macOS, Windows', url: 'https://github.com/retroverse-studios/glomph-maze', features: ['Ghost AI', 'Custom mazes', 'Terminal-native'] },
-        { id: 'incident-zero', name: 'Incident Zero', status: 'TABLETOP+DIGITAL', desc: 'Cooperative cybersecurity strategy game. One attacks, the rest defend. Powered by the MITRE ATT&CK framework.', platforms: 'Co-op tabletop (print & play), Web', url: 'https://incidentzero.retroverse.studio', features: ['2-7 players', 'MITRE ATT&CK scenarios', '6 modules', '171 cards'] }
-    ];
+    // The game and tool cards in index.html are the only copy of this content.
+    // Every mode (terminal, BBS, forum) reads it from those cards, so to add or
+    // change a product, edit its <article class="card"> in index.html and nothing here.
+    function readCards(attr) {
+        function text(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
+        function list(card, sel) {
+            return Array.prototype.map.call(card.querySelectorAll(sel), text);
+        }
+        return Array.prototype.map.call(document.querySelectorAll('article.card[data-' + attr + ']'), function (card) {
+            var link = card.querySelector('a.cta');
+            var tags = list(card, '.tags .tag').join(', ');
+            return {
+                id: card.getAttribute('data-' + attr),
+                name: text(card.querySelector('h3')),
+                status: text(card.querySelector('.badge')).toUpperCase(),
+                desc: text(card.querySelector('.card-body > p')),
+                features: list(card, '.features li'),
+                platforms: tags,                      // games call the tags platforms
+                tech: tags,                           // tools call them tech
+                url: link ? link.href : '',
+                cta: text(link) || 'View'
+            };
+        });
+    }
 
-    var TOOLS = [
-        { id: 'karaoke-stage', name: 'Karaoke Stage', desc: 'Themed karaoke player supporting CDG+MP3 and LRC formats.', tech: 'Tauri, React, TypeScript', url: 'https://karaokestage.retroverse.studio' },
-        { id: 'visual-cataloguer', name: 'Visual Cataloguer', desc: 'Batch-catalogue physical collections using QR-code dividers and AI identification.', tech: 'Python, Docker, AI', url: 'https://visualcataloguer.retroverse.studio' },
-        { id: 'virtual-lanes', name: 'Virtual Lanes', desc: 'Phone-first bowling companion. Bowl real frames against simulated rivals, journal every shot, track your stats — all offline, no accounts.', tech: 'PWA, Offline-first', url: 'https://virtuallanes.retroverse.studio' },
-        { id: 'slotforge', name: 'SlotForge', desc: 'AFX-compatible HO slot car track designer with real piece geometry, closure checks, 3D preview and 1:1 build sheets.', tech: 'PWA, 3D, TypeScript', url: 'https://slotforge.retroverse.studio' },
-        { id: 'numeron', name: 'NUMERON', desc: 'Numerology exploration tool in a phosphor-CRT terminal aesthetic. Five traditions compared — disagreements included — with the Barnum effect explained by name.', tech: 'Web, Desktop (Win/macOS/Linux)', url: 'https://numeron.retroverse.studio' },
-        { id: 'astron', name: 'ASTRON', desc: 'Astrology chart engine running the real Swiss Ephemeris in your browser. Natal charts, transits, synastry — tropical and sidereal side by side. The maths is real; the meaning belongs to the tradition.', tech: 'Web, Desktop (Win/macOS/Linux), CLI', url: 'https://astron.retroverse.studio' }
-    ];
+    var GAMES = readCards('game');
+    var TOOLS = readCards('tool');
 
     var SECTIONS = [
         { id: 'hero', world: '1-1', name: 'START' },
@@ -492,13 +504,13 @@
             case 'games': case 'ls':
                 explore('games');
                 termPrint('');
-                termPrint('+--+----------------------+-------------------+', 'accent');
-                termPrint('| #| TITLE                | STATUS            |', 'accent');
-                termPrint('+--+----------------------+-------------------+', 'accent');
+                termPrint('+--+----------------------+--------------------+', 'accent');
+                termPrint('| #| TITLE                | STATUS             |', 'accent');
+                termPrint('+--+----------------------+--------------------+', 'accent');
                 GAMES.forEach(function (g, i) {
-                    termPrint('| ' + (i+1) + '| ' + pad(g.name, 20) + ' | ' + pad(g.status, 17) + ' |');
+                    termPrint('| ' + (i+1) + '| ' + pad(g.name, 20) + ' | ' + pad(g.status, 18) + ' |');
                 });
-                termPrint('+--+----------------------+-------------------+', 'accent');
+                termPrint('+--+----------------------+--------------------+', 'accent');
                 termPrint('');
                 termPrint('Type "play 1" through "play 4" for details.', 'muted');
                 break;
@@ -1605,14 +1617,14 @@
             });
             html += '    </div>';
             if (g.url) {
-                html += '    <a href="' + g.url + '" class="forum-post-link" target="_blank" rel="noopener">' + (g.status === 'FLAGSHIP' ? 'Play Now' : 'View') + '</a>';
+                html += '    <a href="' + g.url + '" class="forum-post-link" target="_blank" rel="noopener">' + esc(g.cta) + '</a>';
             }
         } else if (thread.tool) {
             var tool = thread.tool;
             html += '    <div class="forum-post-text">' + esc(tool.desc) + '</div>';
             html += '    <div class="forum-post-text">Tech: <span class="highlight">' + esc(tool.tech) + '</span></div>';
             if (tool.url) {
-                html += '    <a href="' + tool.url + '" class="forum-post-link" target="_blank" rel="noopener">View on GitHub</a>';
+                html += '    <a href="' + tool.url + '" class="forum-post-link" target="_blank" rel="noopener">' + esc(tool.cta) + '</a>';
             }
         } else if (thread.aboutThread) {
             html += '    <div class="forum-post-text">RetroVerse Studios is an independent game studio based in Perth, Australia. We fuse retro-pixel aesthetics with cutting-edge decision algorithms.</div>';
